@@ -7,8 +7,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
 # Target
 ## Sources
 SET(HEADERS
+	include/controller/LedDiodeControl.hpp
 )
 set(SOURCES
+	src/controller/LedDiodeControl.cpp
 	src/main.cpp
 )
 
