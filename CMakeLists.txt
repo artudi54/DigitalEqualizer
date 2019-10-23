@@ -12,7 +12,7 @@ SET(HEADERS
 set(SOURCES
 	src/controller/LedDiodeControl.cpp
 	src/main.cpp
-)
+        src/controller/Application.cpp include/controller/Application.hpp)
 
 ## Elf executable
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})

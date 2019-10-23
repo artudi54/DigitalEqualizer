@@ -1,7 +1,6 @@
 #include "LedDiodeControl.hpp"
 #include <cstdint>
 #include <stdexcept>
-#include <stm32f4xx_hal.h>
 #include <stm32f4xx_hal_gpio.h>
 #include <stm32f4xx_hal_rcc.h>
 
@@ -35,7 +34,6 @@ namespace controller {
     }
 
     LedDiodeControl::LedDiodeControl() {
-		HAL_Init();
         __HAL_RCC_GPIOD_CLK_ENABLE();
         GPIO_InitTypeDef gpio;
         gpio.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
