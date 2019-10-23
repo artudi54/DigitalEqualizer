@@ -32,8 +32,17 @@ target_include_directories(${PROJECT_NAME}
 
 # Libraries
 ## Controller properties
-set(DEVICE_FAMILY STM32F40_41xxx)
+set(DEVICE_FAMILY STM32F407xx)
 set(HSE_VALUE 8000000)
+set(HSI_VALUE 16000000)
+
+# Optimization level
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  set(additional_flags -O0)
+else()
+  set(additional_flags -Os)
+endif()
+target_compile_options(${PROJECT_NAME} PUBLIC ${additional_flags})
 
 ## Library link
 add_subdirectory(lib)

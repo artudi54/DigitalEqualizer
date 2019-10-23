@@ -1,6 +1,6 @@
-add_subdirectory(startup)
 add_subdirectory(stm32f4xx)
+add_subdirectory(HAL)
 
 add_library(lib INTERFACE)
-target_link_libraries(lib INTERFACE stm32f4xx startup)
+target_link_libraries(lib INTERFACE stm32f4xx HAL)
 
