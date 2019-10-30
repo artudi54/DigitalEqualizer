@@ -1,33 +1,58 @@
 cmake_minimum_required (VERSION 3.10)
-project(digital-equalizer  C CXX ASM)
+project(digital-equalizer LANGUAGES C CXX ASM)
 
-# Compiler options
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
+# CMake setup
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+if(NOT CMAKE_BUILD_TYPE) 
+    set(CMAKE_BUILD_TYPE Release)
+endif()
 
-# Target
-## Sources
+# Source code
 SET(HEADERS
-	include/controller/LedDiodeControl.hpp
+	include/audio/WavAudioMetadata.hpp
+	include/audio/WavAudioReader.hpp
+	include/audio/WavFormatTag.hpp
+	include/filesystem/DirectoryListing.hpp
+	include/filesystem/FileReadStream.hpp
+	include/sys/Application.hpp
+	include/sys/LedDiodeControl.hpp
 )
 set(SOURCES
-	src/controller/LedDiodeControl.cpp
+	src/audio/WavAudioMetadata.cpp
+	src/audio/WavAudioReader.cpp
+	src/filesystem/DirectoryListing.cpp
+	src/filesystem/FileReadStream.cpp
+	src/sys/interrupt_forwarders.cpp
+	src/sys/LedDiodeControl.cpp
+	src/sys/Application.cpp
 	src/main.cpp
-        src/controller/Application.cpp include/controller/Application.hpp)
+)
 
-## Elf executable
+# Executable
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_NAME ${PROJECT_NAME}.elf)
-## Bin dump
+
+# Binary dump
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.elf ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bin
 )
 
+# Compiler options
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD_REQUIRED ON
+	CXX_EXTENSIONS OFF
+)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
+
 # Includes
 target_include_directories(${PROJECT_NAME}
 	PUBLIC
-		include
+        include
 	PRIVATE
-		include/controller
+		include/audio
+		include/filesystem
+        include/sys
 )
 
 # Libraries
@@ -44,10 +69,17 @@ else()
 endif()
 target_compile_options(${PROJECT_NAME} PUBLIC ${additional_flags})
 
-## Library link
+# Library link
 add_subdirectory(lib)
 target_link_libraries(${PROJECT_NAME} PRIVATE lib)
 
-## Linker script
+# Linker script
 target_link_libraries(${PROJECT_NAME} PRIVATE -T${PROJECT_SOURCE_DIR}/linker/stm32f407vgt.ld)
 
+# Install
+find_package(OpenOCD REQUIRED)
+set(OPENOCD_CONFIG ${PROJECT_SOURCE_DIR}/config/stm32f4discovery.cfg)
+set(FLASHED_FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.elf)
+install(CODE
+	"execute_process(COMMAND ${OPENOCD} -f ${OPENOCD_CONFIG} -c \"program ${FLASHED_FILE} verify reset exit\")"
+)

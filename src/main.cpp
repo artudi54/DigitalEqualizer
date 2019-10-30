@@ -1,17 +1,13 @@
-#include <controller/LedDiodeControl.hpp>
-#include <controller/Application.hpp>
-using namespace std::literals;
+#include <sys/Application.hpp>
+#include <filesystem/DirectoryListing.hpp>
+#include <cstring>
+#include <ff.h>
 
-extern "C" int main() {
-    controller::Application& application = controller::Application::createInstance();
-	controller::LedDiodeControl& control = controller::Application::getLedDiodeControl();
-	controller::Application::sleep(1s);
-	control.enableDiode(controller::LedDiodeControl::Color::Red);
-	controller::Application::sleep(1s);
-	control.enableDiode(controller::LedDiodeControl::Color::Green);
-	controller::Application::sleep(1s);
-	control.disableDiode(controller::LedDiodeControl::Color::Red);
-	controller::Application::sleep(1s);
-	control.disableDiode(controller::LedDiodeControl::Color::Green);
+
+int main() {
+    sys::Application application;
+    filesystem::DirectoryListing listing("0:/");
     return application.exec();
-}      
+}
+
+

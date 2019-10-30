@@ -2,11 +2,9 @@ cmake_minimum_required (VERSION 3.10)
 project(HAL LANGUAGES C)
 
 set(SOURCES 
-    src/Legacy/stm32f4xx_hal_can.c
     src/stm32f4xx_hal.c
     src/stm32f4xx_hal_adc.c
     src/stm32f4xx_hal_adc_ex.c
-    src/stm32f4xx_hal_can.c
     src/stm32f4xx_hal_cec.c
     src/stm32f4xx_hal_cortex.c
     src/stm32f4xx_hal_crc.c

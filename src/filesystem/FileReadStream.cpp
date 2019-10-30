@@ -1,0 +1,38 @@
+#include "FileReadStream.hpp"
+#include <ff.h>
+#include <stdexcept>
+
+namespace filesystem {
+    FileReadStream::FileReadStream(const std::string &filePath)
+        : handle(nullptr)
+        , filePath(filePath) {
+        FIL* fileHandle = reinterpret_cast<FIL*>(handle);
+        if (f_open(fileHandle, filePath.c_str(), FA_READ) != FR_OK)
+            throw std::runtime_error("Failed to open file '" + filePath + "'");
+    }
+
+    FileReadStream::~FileReadStream() {
+        f_close(reinterpret_cast<FIL*>(handle));
+    }
+
+    const std::string &FileReadStream::getFilePath() const {
+        return filePath;
+    }
+
+    void FileReadStream::read(void *buffer, std::size_t count) {
+        FIL* fileHandle = reinterpret_cast<FIL*>(handle);
+        UINT bytesRead = 0;
+        if (f_read(fileHandle, buffer, static_cast<UINT>(count), &bytesRead) != FR_OK)
+            throw std::runtime_error("Failed to read from file '" + filePath + "'");
+        if (bytesRead != count)
+            throw std::runtime_error(
+                    "Read " + std::to_string(bytesRead) +
+                    "bytes instead of " + std::to_string(count) +
+                    "from '" + filePath + "'");
+    }
+
+    void FileReadStream::seek(std::size_t position) {
+        if (f_lseek(reinterpret_cast<FIL*>(handle), static_cast<FSIZE_t>(position)))
+            throw std::runtime_error("Failed to seek to " + std::to_string(position) + " in file '" + filePath + "'");
+    }
+}
