@@ -8,6 +8,7 @@ int main() {
     filesystem::DirectoryListing listing("0:/");
     audio::AudioPlayer audioPlayer;
     audioPlayer.setSource("0:/sample");
+    audioPlayer.setVolume(60);
     audioPlayer.play();
     return application.exec();
 }

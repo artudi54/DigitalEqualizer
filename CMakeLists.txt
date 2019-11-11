@@ -10,6 +10,7 @@ endif()
 # Source code
 SET(HEADERS
 	include/audio/AudioPlayer.hpp
+	include/audio/AudioPreprocessor.hpp
 	include/audio/WavAudioMetadata.hpp
 	include/audio/WavAudioReader.hpp
 	include/audio/WavFormatTag.hpp
@@ -21,6 +22,7 @@ SET(HEADERS
 )
 set(SOURCES
 	src/audio/AudioPlayer.cpp
+	src/audio/AudioPreprocessor.cpp
 	src/audio/WavAudioMetadata.cpp
 	src/audio/WavAudioReader.cpp
 	src/filesystem/DirectoryListing.cpp
@@ -29,7 +31,7 @@ set(SOURCES
 	src/sys/LedDiodeControl.cpp
 	src/sys/Task.cpp
 	src/main.cpp
-)
+ )
 
 # Executable
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})

@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <audio/AudioPreprocessor.hpp>
 #include <audio/WavAudioReader.hpp>
 #include <sys/Task.hpp>
 
@@ -12,42 +13,57 @@ namespace audio {
             NoSource,
             Stopped,
             Playing,
+            Paused
         };
 
         AudioPlayer();
         ~AudioPlayer();
         void setSource(const std::string& sourcePath);
         void play();
+        void pause();
         void stop();
+
+        unsigned getVolume() const;
+        void setVolume(unsigned volume);
+
+        void setAudioPreprocessor(AudioPreprocessor& preprocessor);
+
+        bool isEmpty();
+        bool isPlaying();
+        bool isPaused();
+        bool isStopped();
         State getState() const;
 
     private:
         enum class BufferState {
-            None,
+            Done,
             Started,
             HalfWayThrough,
-            Done
+            Error
         };
 
         void progress() override;
 
-        void initialize();
-        void deinitialize();
+        void playerInitialize();
+        void playerDeinitialize();
+        void playerPlayBuffer();
+        void playerSetVolume();
+        void playerPause();
+        void playerUnpause();
 
-
-        void errorHandler();
-        void halfWayBufferHandler();
-        void bufferDoneHandler();
+        void handleError();
+        void handleBufferHalfWay();
+        void handleBufferDone();
 
         void validateNotEmpty();
 
         State state;
         BufferState bufferState;
-        bool error;
         unsigned volume;
         std::unique_ptr<WavAudioReader> reader;
         std::vector<std::uint16_t> playingBuffer;
         std::vector<std::uint16_t> cachedBuffer;
+        AudioPreprocessor* preprocessor;
 
         static AudioPlayer* instance;
     };

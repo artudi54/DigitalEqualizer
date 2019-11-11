@@ -15,37 +15,36 @@ extern "C" {
 namespace audio {
     class Handlers {
     public:
-        static void errorHandler() {
-            AudioPlayer::instance->errorHandler();
+        static void handleError() {
+            AudioPlayer::instance->handleError();
         }
-        static void halfWayBufferHandler() {
-            AudioPlayer::instance->halfWayBufferHandler();
+        static void handleBufferHalfWay() {
+            AudioPlayer::instance->handleBufferHalfWay();
         }
-        static void bufferDoneHandler() {
-            AudioPlayer::instance->bufferDoneHandler();
+        static void handleBufferDone() {
+            AudioPlayer::instance->handleBufferDone();
         }
     };
 }
 
 extern "C" {
     void BSP_AUDIO_OUT_Error_CallBack(void) {
-        audio::Handlers::errorHandler();
+        audio::Handlers::handleError();
     }
     void BSP_AUDIO_OUT_HalfTransfer_CallBack(void) {
-        audio::Handlers::halfWayBufferHandler();
+        audio::Handlers::handleBufferHalfWay();
     }
     void BSP_AUDIO_OUT_TransferComplete_CallBack() {
-        audio::Handlers::bufferDoneHandler();
+        audio::Handlers::handleBufferDone();
     }
 }
 
 namespace audio {
-    const std::size_t BUFFER_SIZE = 8192;
+    const std::size_t BUFFER_SIZE = 4096;
 
     AudioPlayer::AudioPlayer()
         : state(State::NoSource)
-        , bufferState(BufferState::None)
-        , error(false)
+        , bufferState(BufferState::Done)
         , volume(100)
         , reader()
         , playingBuffer()
@@ -61,27 +60,78 @@ namespace audio {
     }
 
     void AudioPlayer::setSource(const std::string &sourcePath) {
-        if (state != State::NoSource)
-            deinitialize();
+        if (!isEmpty())
+            playerDeinitialize();
         reader = std::make_unique<WavAudioReader>(sourcePath);
         state = State::Stopped;
     }
 
     void AudioPlayer::play() {
         validateNotEmpty();
-        if (state == State::Playing)
+
+        if (isPaused()) {
+            playerUnpause();
+            state = State::Playing;
             return;
-        initialize();
+        }
+        if (isPlaying())
+            return;
+        playerInitialize();
         state = State::Playing;
-        progress();
+    }
+
+    void AudioPlayer::pause() {
+        validateNotEmpty();
+
+        if (isPaused()) {
+            playerUnpause();
+            state = State::Playing;
+            return;
+        }
+        if (isStopped())
+            return;
+        playerPause();
+        state = State::Paused;
     }
 
     void AudioPlayer::stop() {
         validateNotEmpty();
-        if (state == State::Stopped)
+        if (isStopped())
             return;
-        deinitialize();
+        playerDeinitialize();
         state = State::Stopped;
+    }
+
+    unsigned AudioPlayer::getVolume() const {
+        return volume;
+    }
+
+    void AudioPlayer::setVolume(unsigned volume) {
+        if (volume > 100)
+            throw std::invalid_argument("Volume cannot be greater than 100");
+        this->volume = volume;
+        if (state == State::Playing)
+            playerSetVolume();
+    }
+
+    void AudioPlayer::setAudioPreprocessor(AudioPreprocessor &preprocessor) {
+        this->preprocessor = &preprocessor;
+    }
+
+    bool AudioPlayer::isEmpty() {
+        return state == State::NoSource;
+    }
+
+    bool AudioPlayer::isPlaying() {
+        return state == State::Playing;
+    }
+
+    bool AudioPlayer::isPaused() {
+        return state == State::Paused;
+    }
+
+    bool AudioPlayer::isStopped() {
+        return state == State::Stopped;
     }
 
     AudioPlayer::State AudioPlayer::getState() const {
@@ -89,59 +139,74 @@ namespace audio {
     }
 
     void AudioPlayer::progress() {
-        if (state != State::Playing)
+        if (!isPlaying())
             return;
-        if (error)
+        if (bufferState == BufferState::Error)
             throw std::runtime_error("Error occurred while playing '" + reader->getFilePath() + "'");
 
-        if (bufferState == BufferState::None) {
-            playingBuffer = reader->readNext(BUFFER_SIZE);
-            if (BSP_AUDIO_OUT_Play(playingBuffer.data(), playingBuffer.size()) != AUDIO_OK)
-                throw std::runtime_error("Failed to play audio from '" + reader->getFilePath() + "'");
-            bufferState = BufferState::Started;
+        if (cachedBuffer.empty() && reader->hasNext()) {
+            cachedBuffer = reader->readNext(BUFFER_SIZE);
+            if (preprocessor != nullptr)
+                preprocessor->preprocess(cachedBuffer);
         }
-        if (cachedBuffer.empty()) {
-            if (!reader->hasNext()) {
-                bufferState = BufferState::None;
+
+        if (bufferState == BufferState::Done) {
+            std::swap(playingBuffer, cachedBuffer);
+            if (playingBuffer.empty()) {
+                bufferState = BufferState::Done;
                 stop();
                 return;
             }
-            cachedBuffer = reader->readNext(BUFFER_SIZE);
-        }
-        if (bufferState == BufferState::Done) {
-            std::swap(playingBuffer, cachedBuffer);
             cachedBuffer.clear();
-            if (BSP_AUDIO_OUT_Play(playingBuffer.data(), playingBuffer.size()) != AUDIO_OK)
-                throw std::runtime_error("Failed to play audio from '" + reader->getFilePath() + "'");
+            playerPlayBuffer();
             bufferState = BufferState::Started;
         }
-
     }
 
-    void AudioPlayer::initialize() {
-        if (BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_AUTO, static_cast<std::uint8_t>(volume * 0.8), reader->getMetadata().getSamplingRate()) != AUDIO_OK)
-            throw std::runtime_error("Failed to initialize audio player for '" + reader->getFilePath() + "'");
+    void AudioPlayer::playerInitialize() {
+        if (BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_AUTO, static_cast<std::uint8_t>(volume), reader->getMetadata().getSamplingRate()) != AUDIO_OK)
+            throw std::runtime_error("Failed to playerInitialize audio player for '" + reader->getFilePath() + "'");
     }
 
-    void AudioPlayer::deinitialize() {
+    void AudioPlayer::playerDeinitialize() {
         if (BSP_AUDIO_OUT_Stop(CODEC_PDWN_HW) != AUDIO_OK)
             throw std::runtime_error("Failed to stop audio player for '" + reader->getFilePath() + "'");
     }
 
-    void AudioPlayer::errorHandler() {
-        error = true;
+    void AudioPlayer::playerPlayBuffer() {
+        if (BSP_AUDIO_OUT_Play(playingBuffer.data(), playingBuffer.size()) != AUDIO_OK)
+            throw std::runtime_error("Failed to play audio from '" + reader->getFilePath() + "'");
     }
 
-    void AudioPlayer::halfWayBufferHandler() {
+    void AudioPlayer::playerSetVolume() {
+        if (BSP_AUDIO_OUT_SetVolume(static_cast<std::uint8_t>(volume)) != AUDIO_OK)
+            throw std::runtime_error("Failed to play volume from '" + reader->getFilePath() + "'");
+    }
+
+    void AudioPlayer::playerPause() {
+        if (BSP_AUDIO_OUT_Pause() != AUDIO_OK)
+            throw std::runtime_error("Failed to pause playing for '" + reader->getFilePath() + "'");
+    }
+
+    void AudioPlayer::playerUnpause() {
+        if (BSP_AUDIO_OUT_Resume() != AUDIO_OK)
+            throw std::runtime_error("Failed to unpause playing for '" + reader->getFilePath() + "'");
+    }
+
+    void AudioPlayer::handleError() {
+        bufferState = BufferState::Error;
+    }
+
+    void AudioPlayer::handleBufferHalfWay() {
         bufferState = BufferState::HalfWayThrough;
     }
 
-    void AudioPlayer::bufferDoneHandler() {
+    void AudioPlayer::handleBufferDone() {
         bufferState = BufferState::Done;
     }
 
     void AudioPlayer::validateNotEmpty() {
-        if (state == State::NoSource)
+        if (isEmpty())
             throw std::runtime_error("No audio source provided");
     }
 
