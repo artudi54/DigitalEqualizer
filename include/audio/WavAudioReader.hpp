@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <audio/WavAudioMetadata.hpp>
-#include <sys/FileReadStream.hpp>
+#include <filesystem/FileReadStream.hpp>
 
 namespace audio {
     class WavAudioReader {
@@ -10,13 +10,13 @@ namespace audio {
         [[nodiscard]] const std::string& getFilePath();
         [[nodiscard]] const WavAudioMetadata& getMetadata();
         [[nodiscard]] bool hasNext() const noexcept;
-        [[nodiscard]] const std::vector<std::uint16_t>& readNext();
+        [[nodiscard]] const std::vector<std::uint16_t>& readNext(std::size_t count);
     private:
         void readRiffChunk();
         void readFormatChunk();
         void readDataChunk();
 
-        sys::FileReadStream readStream;
+        filesystem::FileReadStream readStream;
         WavAudioMetadata metadata;
         std::size_t remainingDataSize;
         std::vector<std::uint16_t> currentData;

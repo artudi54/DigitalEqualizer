@@ -2,8 +2,19 @@
 #include <cstdint>
 #include <stdexcept>
 #include <stm32f4xx_hal_gpio.h>
+#include <stm32f4xx_hal_rcc.h>
 
 namespace sys {
+    LedDiodeControl::LedDiodeControl() {
+        __HAL_RCC_GPIOD_CLK_ENABLE();
+        GPIO_InitTypeDef gpio;
+        gpio.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+        gpio.Mode = GPIO_MODE_OUTPUT_PP;
+        gpio.Pull = GPIO_NOPULL;
+        gpio.Speed = GPIO_SPEED_FREQ_LOW;
+        HAL_GPIO_Init(GPIOD, &gpio);
+    }
+
     bool LedDiodeControl::isEnabled(LedDiodeColor color) {
         return HAL_GPIO_ReadPin(GPIOD, getPIN(color)) == GPIO_PIN_SET;
     }

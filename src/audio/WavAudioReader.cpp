@@ -39,10 +39,10 @@ namespace audio {
         return remainingDataSize != 0;
     }
 
-    const std::vector<std::uint16_t>& WavAudioReader::readNext() {
+    const std::vector<std::uint16_t>& WavAudioReader::readNext(std::size_t count) {
         if (!hasNext())
             throw std::runtime_error("No data to read remaining in '" + getFilePath() + "'");
-        std::size_t readSize = remainingDataSize < metadata.getDataRate() ? remainingDataSize : metadata.getDataRate();
+        std::size_t readSize = remainingDataSize < count ? remainingDataSize : count;
         currentData.resize(readSize);
         readStream.read(currentData.data(), currentData.size());
         remainingDataSize -= readSize;
@@ -77,8 +77,8 @@ namespace audio {
             throw std::runtime_error("Non PCM file '" + getFilePath() + "' not supported");
         if (metadata.getChannelsNumber() > 2)
             throw std::runtime_error("Channel number greater than 2 in file '" + getFilePath() + "' not supported");
-        const std::uint16_t SUPPORTED_SAMPLING = 22050;
-        if (metadata.getSamplingRate() != SUPPORTED_SAMPLING)
+        const std::uint16_t SUPPORTED_SAMPLING = 48000;
+        if (metadata.getSamplingRate() > SUPPORTED_SAMPLING)
             throw std::runtime_error("Unsupported " + std::to_string(SUPPORTED_SAMPLING) + " sampling in file '" + getFilePath() + "'");
     }
 

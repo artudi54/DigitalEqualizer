@@ -1,29 +1,60 @@
 #include "Application.hpp"
 #include <stdexcept>
-
+#include <algorithm>
 #include <stm32f4xx_hal.h>
 #include <ff.h>
 #include <drivers/user_diskio.h>
 #include <drivers/fatfs_sd.h>
 
+namespace sys {
+    class Handlers {
+    public:
+        static void handleSysTick() {
+            sys::Application::instance->sysTickHandler();
+        }
+        static void handleError() {
+            sys::Application::instance->errorHandler();
+        }
+    };
+}
+
+extern "C" void SysTick_Handler(void) {
+    sys::Handlers::handleSysTick();
+}
+
+extern "C" void Error_Handler(void) {
+    sys::Handlers::handleError();
+}
 
 extern SPI_HandleTypeDef hspi1;
 
 namespace sys {
-    Application::Application() {
+    Application::Application()
+        : tasks() {
         if (instance != nullptr)
             throw std::runtime_error("Application was already created");
+        instance = this;
         initializeHAL();
         initializeClock();
-        initializeLED();
-        initializeStdIO();
         initializeSDCard();
-        instance = this;
     }
 
     int Application::exec() {
-        while (true);
+        while (true) {
+            for (auto& task : tasks)
+                task->progress();
+        }
         return 0;
+    }
+
+    void Application::registerTask(Task *task) {
+        tasks.push_back(task);
+    }
+
+    void Application::unregisterTask(Task *task) {
+        auto it = std::find(tasks.begin(), tasks.end(), task);
+        if (it != tasks.end())
+            tasks.erase(it);
     }
 
     void Application::initializeHAL() {
@@ -61,20 +92,6 @@ namespace sys {
             //TODO
         }
     }
-
-    void Application::initializeLED() {
-        __HAL_RCC_GPIOD_CLK_ENABLE();
-        GPIO_InitTypeDef gpio;
-        gpio.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
-        gpio.Mode = GPIO_MODE_OUTPUT_PP;
-        gpio.Pull = GPIO_NOPULL;
-        gpio.Speed = GPIO_SPEED_FREQ_LOW;
-        HAL_GPIO_Init(GPIOD, &gpio);
-    }
-
-    void Application::initializeStdIO() {
-    }
-
 
     void Application::initializeSDCard() {
         initializeSDCardSPI();
@@ -114,17 +131,24 @@ namespace sys {
         HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
     }
 
-    Application* Application::instance = nullptr;
 
     void Application::initializeSDCardSPIIO() {
         __HAL_RCC_GPIOA_CLK_ENABLE();
+        __HAL_RCC_GPIOB_CLK_ENABLE();
         GPIO_InitTypeDef GPIO_InitStruct = {};
-        GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+        GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
         GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+        GPIO_InitStruct.Pin = GPIO_PIN_3;
+        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+        GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
+        HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     }
 
@@ -152,4 +176,7 @@ namespace sys {
     void Application::errorHandler() {
         while (true);
     }
+
+    Application* Application::instance = nullptr;
+
 }

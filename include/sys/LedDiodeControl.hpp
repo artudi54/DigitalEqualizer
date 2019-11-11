@@ -11,6 +11,7 @@ namespace sys {
 
     class LedDiodeControl {
     public:
+        explicit LedDiodeControl();
         bool isEnabled(LedDiodeColor color);
         void enableDiode(LedDiodeColor color);
         void disableDiode(LedDiodeColor color);

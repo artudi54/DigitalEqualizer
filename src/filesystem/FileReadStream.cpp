@@ -6,6 +6,7 @@ namespace filesystem {
     FileReadStream::FileReadStream(const std::string &filePath)
         : handle(nullptr)
         , filePath(filePath) {
+        handle = new FIL;
         FIL* fileHandle = reinterpret_cast<FIL*>(handle);
         if (f_open(fileHandle, filePath.c_str(), FA_READ) != FR_OK)
             throw std::runtime_error("Failed to open file '" + filePath + "'");
@@ -13,6 +14,7 @@ namespace filesystem {
 
     FileReadStream::~FileReadStream() {
         f_close(reinterpret_cast<FIL*>(handle));
+        delete reinterpret_cast<FIL*>(handle);
     }
 
     const std::string &FileReadStream::getFilePath() const {

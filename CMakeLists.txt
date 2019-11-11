@@ -9,6 +9,7 @@ endif()
 
 # Source code
 SET(HEADERS
+	include/audio/AudioPlayer.hpp
 	include/audio/WavAudioMetadata.hpp
 	include/audio/WavAudioReader.hpp
 	include/audio/WavFormatTag.hpp
@@ -16,15 +17,17 @@ SET(HEADERS
 	include/filesystem/FileReadStream.hpp
 	include/sys/Application.hpp
 	include/sys/LedDiodeControl.hpp
+	include/sys/Task.hpp
 )
 set(SOURCES
+	src/audio/AudioPlayer.cpp
 	src/audio/WavAudioMetadata.cpp
 	src/audio/WavAudioReader.cpp
 	src/filesystem/DirectoryListing.cpp
 	src/filesystem/FileReadStream.cpp
-	src/sys/interrupt_forwarders.cpp
-	src/sys/LedDiodeControl.cpp
 	src/sys/Application.cpp
+	src/sys/LedDiodeControl.cpp
+	src/sys/Task.cpp
 	src/main.cpp
 )
 
