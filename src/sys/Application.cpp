@@ -144,7 +144,6 @@ namespace sys {
         HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
     }
 
-
     void Application::initializeSDCardSPIIO() {
         __HAL_RCC_GPIOA_CLK_ENABLE();
         __HAL_RCC_GPIOB_CLK_ENABLE();

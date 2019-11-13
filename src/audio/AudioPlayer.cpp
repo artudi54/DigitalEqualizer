@@ -114,23 +114,23 @@ namespace audio {
             playerSetVolume();
     }
 
-    void AudioPlayer::setAudioPreprocessor(AudioPreprocessor &preprocessor) {
-        this->preprocessor = &preprocessor;
+    void AudioPlayer::setAudioFilter(filter::AudioFilter &filter) {
+        this->filter = &filter;
     }
 
-    bool AudioPlayer::isEmpty() {
+    bool AudioPlayer::isEmpty() const {
         return state == State::NoSource;
     }
 
-    bool AudioPlayer::isPlaying() {
+    bool AudioPlayer::isPlaying() const {
         return state == State::Playing;
     }
 
-    bool AudioPlayer::isPaused() {
+    bool AudioPlayer::isPaused() const {
         return state == State::Paused;
     }
 
-    bool AudioPlayer::isStopped() {
+    bool AudioPlayer::isStopped() const {
         return state == State::Stopped;
     }
 
@@ -146,8 +146,8 @@ namespace audio {
 
         if (cachedBuffer.empty() && reader->hasNext()) {
             cachedBuffer = reader->readNext(BUFFER_SIZE);
-            if (preprocessor != nullptr)
-                preprocessor->preprocess(cachedBuffer);
+            if (filter != nullptr)
+                filter->process(cachedBuffer, reader->getMetadata());
         }
 
         if (bufferState == BufferState::Done) {
