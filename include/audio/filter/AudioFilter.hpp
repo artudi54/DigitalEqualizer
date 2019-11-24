@@ -10,7 +10,7 @@ namespace audio::filter {
         void process(std::vector<std::uint16_t>& samples, const WavAudioMetadata& metadata);
 
     protected:
-        virtual void processNormalizedSamples(std::vector<std::vector<float>>& samples, const WavAudioMetadata& metadata) {};
+        virtual void processNormalizedSamples(std::vector<std::vector<float>>& samples) = 0;
 
     private:
         static float sampleToNormalized(std::uint16_t sample, std::size_t samplingRate);

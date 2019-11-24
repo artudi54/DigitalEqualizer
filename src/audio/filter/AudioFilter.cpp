@@ -21,7 +21,7 @@ namespace audio::filter {
             }
         }
 
-        processNormalizedSamples(normalizedSamples, metadata);
+        processNormalizedSamples(normalizedSamples);
 
         for (std::size_t i = 0; i < samples.size(); ++i) {
             std::uint16_t sample = normalizedToSample(normalizedSamples[i % channelsNumber][i / channelsNumber],

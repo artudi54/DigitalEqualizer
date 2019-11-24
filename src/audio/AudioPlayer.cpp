@@ -40,7 +40,7 @@ extern "C" {
 }
 
 namespace audio {
-    const std::size_t BUFFER_SIZE = 4096;
+    const std::size_t BUFFER_SIZE = 1024;
 
     AudioPlayer::AudioPlayer()
         : state(State::NoSource)

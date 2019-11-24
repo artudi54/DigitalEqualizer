@@ -10,28 +10,32 @@ endif()
 # Source code
 SET(HEADERS
 	include/audio/filter/AudioFilter.hpp
+	include/audio/filter/FFTAudioFilter.hpp
 	include/audio/AudioPlayer.hpp
 	include/audio/WavAudioMetadata.hpp
 	include/audio/WavAudioReader.hpp
 	include/audio/WavFormatTag.hpp
 	include/filesystem/DirectoryListing.hpp
 	include/filesystem/FileReadStream.hpp
+	include/math/fft.hpp
 	include/sys/Application.hpp
 	include/sys/LedDiodeControl.hpp
 	include/sys/Task.hpp
 )
 set(SOURCES
 	src/audio/filter/AudioFilter.cpp
+	src/audio/filter/FFTAudioFilter.cpp
 	src/audio/AudioPlayer.cpp
 	src/audio/WavAudioMetadata.cpp
 	src/audio/WavAudioReader.cpp
 	src/filesystem/DirectoryListing.cpp
 	src/filesystem/FileReadStream.cpp
+	src/math/fft.cpp
 	src/sys/Application.cpp
 	src/sys/LedDiodeControl.cpp
 	src/sys/Task.cpp
 	src/main.cpp
-)
+		src/audio/filter/DigitalEqualizerFilter.cpp include/audio/filter/DigitalEqualizerFilter.hpp)
 
 # Executable
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
@@ -58,6 +62,7 @@ target_include_directories(${PROJECT_NAME}
 		include/audio
 		include/audio/filter
 		include/filesystem
+		include/math
         include/sys
 )
 
@@ -71,7 +76,7 @@ set(HSI_VALUE 16000000)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   set(additional_flags -O0)
 else()
-  set(additional_flags -Os)
+  set(additional_flags -O3)
 endif()
 target_compile_options(${PROJECT_NAME} PUBLIC ${additional_flags})
 
