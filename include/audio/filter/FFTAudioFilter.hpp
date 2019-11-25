@@ -5,7 +5,7 @@
 namespace audio::filter {
     class FFTAudioFilter  : public AudioFilter {
     protected:
-        void processNormalizedSamples(std::vector<std::vector<float>>& samples) override;
-        virtual void processFFT(std::vector<std::vector<std::complex<float>>>& fft) = 0;
+        void processNormalizedSamples(std::vector<std::complex<float>>& samples, std::size_t samplingRate) override;
+        virtual void processFFT(std::vector<std::complex<float>>& fft, std::size_t samplingRate) = 0;
     };
 }
