@@ -19,7 +19,7 @@ int main() {
 
         audio::AudioPlayer audioPlayer;
         audioPlayer.setAudioFilter(filter);
-        audioPlayer.setSource("0:/sample8k.wav");
+        audioPlayer.setSource("0:/sample16k.wav");
         audioPlayer.setVolume(60);
         audioPlayer.play();
 
