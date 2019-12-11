@@ -3,7 +3,6 @@
 #include <audio/filter/DigitalEqualizerFilter.hpp>
 #include <audio/AudioPlayer.hpp>
 #include <audio/Playlist.hpp>
-#include <stm32f4xx_hal.h>
 
 int main() {
     try {
@@ -15,9 +14,11 @@ int main() {
         parameters.setFrequenciesType(audio::filter::DigitalEqualizerParameters::FrequenciesType::ISOOctave);
         parameters.setDbGainAt(0, -10);
         parameters.setDbGainAt(1, -10);
+        parameters.setDbGainAt(2, -10);
         filter.setParameters(parameters);
 
         audio::AudioPlayer audioPlayer;
+
         audioPlayer.setAudioFilter(filter);
         audioPlayer.setSource("0:/sample16k.wav");
         audioPlayer.setVolume(60);

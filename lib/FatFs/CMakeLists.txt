@@ -12,6 +12,12 @@ set(SOURCES
     src/option/unicode.c
 )
 
+
 add_library(${PROJECT_NAME} ${SOURCES})
+
+# Optimization level
+set(optimization -O3)
+target_compile_options(${PROJECT_NAME} PRIVATE ${optimization})
+
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 target_link_libraries(${PROJECT_NAME} PUBLIC stm32f4xx HAL)

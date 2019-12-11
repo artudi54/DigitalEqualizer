@@ -15,7 +15,7 @@ namespace audio {
         [[nodiscard]] std::size_t getTotalDataSize() const noexcept;
 
         [[nodiscard]] bool hasNext() const noexcept;
-        [[nodiscard]] const std::vector<std::uint16_t>& readNext(std::size_t count);
+        void readNext(std::vector<std::uint16_t>& data, std::size_t count);
     private:
         void readRiffChunk();
         void readFormatChunk();
@@ -25,6 +25,5 @@ namespace audio {
         WavAudioMetadata metadata;
         std::size_t remainingDataSize;
         std::size_t totalDataSize;
-        std::vector<std::uint16_t> currentData;
     };
 }

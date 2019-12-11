@@ -20,8 +20,7 @@ namespace audio {
         : readStream(file)
         , metadata()
         , remainingDataSize(0)
-        , totalDataSize()
-        , currentData() {
+        , totalDataSize() {
         readRiffChunk();
         readFormatChunk();
         readDataChunk();
@@ -52,14 +51,13 @@ namespace audio {
         return remainingDataSize != 0;
     }
 
-    const std::vector<std::uint16_t>& WavAudioReader::readNext(std::size_t count) {
+    void WavAudioReader::readNext(std::vector<std::uint16_t>& data, std::size_t count) {
         if (!hasNext())
             throw std::runtime_error("No data to read remaining in '" + getFilePath() + "'");
         std::size_t readSize = remainingDataSize < count ? remainingDataSize : count;
-        currentData.resize(readSize);
-        readStream.read(currentData.data(), currentData.size());
+        data.resize(readSize);
+        readStream.read(data.data(), data.size());
         remainingDataSize -= readSize;
-        return currentData;
     }
 
     void WavAudioReader::readRiffChunk() {

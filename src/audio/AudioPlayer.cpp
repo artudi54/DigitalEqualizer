@@ -40,7 +40,7 @@ extern "C" {
 }
 
 namespace audio {
-    const std::size_t BUFFER_SIZE = 8192;
+    const std::size_t BUFFER_SIZE = 16384;
 
     AudioPlayer::AudioPlayer()
             : state(State::NoSource)
@@ -160,7 +160,7 @@ namespace audio {
             throw std::runtime_error("Error occurred while playing '" + reader->getFilePath() + "'");
 
         if (cachedBuffer.empty() && reader->hasNext()) {
-            cachedBuffer = reader->readNext(BUFFER_SIZE);
+            reader->readNext(cachedBuffer, BUFFER_SIZE);
             if (filter != nullptr)
                 filter->process(cachedBuffer, reader->getMetadata());
         }
