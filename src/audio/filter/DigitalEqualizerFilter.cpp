@@ -91,8 +91,17 @@ namespace audio::filter {
         auto freqComparator = [](auto& lhs, auto& rhs) {
             return lhs.getFrequency() < rhs.getFrequency();
         };
-        auto it = std::lower_bound(nodes.begin(), nodes.end(), FilterNode(frequency), freqComparator);
-        return it->getGain();
+        auto upperIt = std::lower_bound(nodes.begin(), nodes.end(), FilterNode(frequency), freqComparator);
+        auto lowerIt = upperIt == nodes.begin()? upperIt : std::prev(upperIt);
+        if (lowerIt == upperIt)
+            return lowerIt->getGain();
+        float lowerFrequency = lowerIt != nodes.end()? lowerIt->getFrequency() : 0.0F;
+        float lowerGain = lowerIt != nodes.end()? lowerIt->getGain() : 0.0F;
+        float upperFrequency = upperIt != nodes.end()? upperIt->getFrequency() : 20000.0F;
+        float upperGain = upperIt != nodes.end()? upperIt->getGain() : 0.0F;
+        float m = (upperGain - lowerGain) / (upperFrequency -  lowerFrequency);
+        float b = lowerGain - m * lowerFrequency;
+        return m * frequency + b;
     }
 
 

@@ -9,11 +9,6 @@ int main() {
     try {
         sys::Application application;
         sys::BluetoothCommunicationProvider provider;
-        std::string message = "AT+NAMEDigitalEqualizer";
-        provider.transmitMessage(message.c_str(), message.size());
-        std::string data(6, 0);
-        provider.receiveMessage(data.data(), 6);
-
         audio::Playlist listing("0:/");
         audio::filter::DigitalEqualizerFilter filter;
         audio::filter::DigitalEqualizerParameters parameters;
