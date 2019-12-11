@@ -34,6 +34,9 @@ namespace audio {
         [[nodiscard]] bool isStopped() const;
         [[nodiscard]] State getState() const;
 
+        [[nodiscard]] float getCurrentTime() const;
+        [[nodiscard]] float getEndTime() const;
+
     private:
         enum class BufferState {
             Done,

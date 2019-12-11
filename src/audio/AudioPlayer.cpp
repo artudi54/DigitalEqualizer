@@ -43,18 +43,19 @@ namespace audio {
     const std::size_t BUFFER_SIZE = 8192;
 
     AudioPlayer::AudioPlayer()
-        : state(State::NoSource)
-        , bufferState(BufferState::Done)
-        , volume(100)
-        , reader()
-        , playingBuffer()
-        , cachedBuffer() {
+            : state(State::NoSource)
+            , bufferState(BufferState::Done)
+            , volume(100)
+            , reader()
+            , playingBuffer()
+            , cachedBuffer() {
         if (instance != nullptr)
             throw std::runtime_error("Audio player instance already exists");
         instance = this;
     }
+
     AudioPlayer::~AudioPlayer() {
-        if (state!= State::NoSource)
+        if (state != State::NoSource)
             stop();
         instance = nullptr;
     }
@@ -138,6 +139,20 @@ namespace audio {
         return state;
     }
 
+    float AudioPlayer::getCurrentTime() const {
+        return static_cast<float>(reader->getReadDataSize())
+               / static_cast<float>(reader->getMetadata().getChannelsNumber())
+               / static_cast<float>(reader->getMetadata().getSamplingRate())
+               / std::round(static_cast<float>(reader->getMetadata().getBitsPerSample()) / 8.0F);
+    }
+
+    float AudioPlayer::getEndTime() const {
+        return static_cast<float>(reader->getTotalDataSize())
+               / static_cast<float>(reader->getMetadata().getChannelsNumber())
+               / static_cast<float>(reader->getMetadata().getSamplingRate())
+               / std::round(static_cast<float>(reader->getMetadata().getBitsPerSample()) / 8.0F);
+    }
+
     void AudioPlayer::progress() {
         if (!isPlaying())
             return;
@@ -164,7 +179,8 @@ namespace audio {
     }
 
     void AudioPlayer::playerInitialize() {
-        if (BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_AUTO, static_cast<std::uint8_t>(volume), reader->getMetadata().getSamplingRate()) != AUDIO_OK)
+        if (BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_AUTO, static_cast<std::uint8_t>(volume),
+                               reader->getMetadata().getSamplingRate()) != AUDIO_OK)
             throw std::runtime_error("Failed to playerInitialize audio player for '" + reader->getFilePath() + "'");
     }
 
@@ -210,5 +226,5 @@ namespace audio {
             throw std::runtime_error("No audio source provided");
     }
 
-    AudioPlayer* AudioPlayer::instance = nullptr;
+    AudioPlayer *AudioPlayer::instance = nullptr;
 }

@@ -9,6 +9,11 @@ namespace audio {
         explicit WavAudioReader(const std::string& file);
         [[nodiscard]] const std::string& getFilePath();
         [[nodiscard]] const WavAudioMetadata& getMetadata();
+
+        [[nodiscard]] std::size_t getReadDataSize() const noexcept;
+        [[nodiscard]] std::size_t getRemainingDataSize() const noexcept;
+        [[nodiscard]] std::size_t getTotalDataSize() const noexcept;
+
         [[nodiscard]] bool hasNext() const noexcept;
         [[nodiscard]] const std::vector<std::uint16_t>& readNext(std::size_t count);
     private:
@@ -19,6 +24,7 @@ namespace audio {
         filesystem::FileReadStream readStream;
         WavAudioMetadata metadata;
         std::size_t remainingDataSize;
+        std::size_t totalDataSize;
         std::vector<std::uint16_t> currentData;
     };
 }

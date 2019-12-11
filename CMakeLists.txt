@@ -10,8 +10,10 @@ endif()
 # Source code
 SET(HEADERS
 	include/audio/filter/AudioFilter.hpp
+    include/audio/filter/DigitalEqualizerFilter.hpp
 	include/audio/filter/FFTAudioFilter.hpp
 	include/audio/AudioPlayer.hpp
+    include/audio/Playlist.hpp
 	include/audio/WavAudioMetadata.hpp
 	include/audio/WavAudioReader.hpp
 	include/audio/WavFormatTag.hpp
@@ -24,8 +26,10 @@ SET(HEADERS
 )
 set(SOURCES
 	src/audio/filter/AudioFilter.cpp
+    src/audio/filter/DigitalEqualizerFilter.cpp
 	src/audio/filter/FFTAudioFilter.cpp
 	src/audio/AudioPlayer.cpp
+    src/audio/Playlist.cpp
 	src/audio/WavAudioMetadata.cpp
 	src/audio/WavAudioReader.cpp
 	src/filesystem/DirectoryListing.cpp
@@ -35,7 +39,7 @@ set(SOURCES
 	src/sys/LedDiodeControl.cpp
 	src/sys/Task.cpp
 	src/main.cpp
-		src/audio/filter/DigitalEqualizerFilter.cpp include/audio/filter/DigitalEqualizerFilter.hpp)
+		src/sys/BluetoothCommunicationProvider.cpp include/sys/BluetoothCommunicationProvider.hpp)
 
 # Executable
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})

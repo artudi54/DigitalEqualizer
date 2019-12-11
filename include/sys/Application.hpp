@@ -15,6 +15,7 @@ namespace sys {
         void unregisterTask(Task* task);
     private:
         void initializeHAL();
+
         void initializeClock();
         void initializeSDCard();
         void initializeSDCardSPI();

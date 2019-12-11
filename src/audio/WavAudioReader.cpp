@@ -20,6 +20,7 @@ namespace audio {
         : readStream(file)
         , metadata()
         , remainingDataSize(0)
+        , totalDataSize()
         , currentData() {
         readRiffChunk();
         readFormatChunk();
@@ -33,6 +34,18 @@ namespace audio {
 
     const WavAudioMetadata &WavAudioReader::getMetadata() {
         return metadata;
+    }
+
+    std::size_t WavAudioReader::getReadDataSize() const noexcept {
+        return totalDataSize - remainingDataSize;
+    }
+
+    std::size_t WavAudioReader::getRemainingDataSize() const noexcept {
+        return remainingDataSize;
+    }
+
+    std::size_t WavAudioReader::getTotalDataSize() const noexcept {
+        return totalDataSize;
     }
 
     bool WavAudioReader::hasNext() const noexcept {
@@ -87,6 +100,6 @@ namespace audio {
         readStream.read(&dataSubChunk, sizeof(Chunk));
         if (dataSubChunk.header != headers::DATA)
             throw std::runtime_error("Failed to read data chunk from '" + getFilePath() + "'");
-        remainingDataSize = dataSubChunk.size;
+        remainingDataSize = totalDataSize = dataSubChunk.size;
     }
 }

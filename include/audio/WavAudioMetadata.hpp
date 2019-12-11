@@ -11,10 +11,11 @@ namespace audio {
     public:
         [[nodiscard]] WavFormatTag getFormatTag() const noexcept;
         [[nodiscard]] std::uint16_t getChannelsNumber() const noexcept;
-        [[nodiscard]] std::uint32_t getSamplingRate() const noexcept ;
+        [[nodiscard]] std::uint32_t getSamplingRate() const noexcept;
         [[nodiscard]] std::uint32_t getDataRate() const noexcept;
         [[nodiscard]] std::uint16_t getDataBlockSize() const noexcept;
         [[nodiscard]] std::uint16_t getBitsPerSample() const noexcept;
+
     private:
         WavFormatTag formatTag;
         std::uint16_t channelsNumber;
