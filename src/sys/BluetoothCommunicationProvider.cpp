@@ -28,7 +28,7 @@ extern "C" void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 }
 
 namespace sys {
-
+    static constexpr std::uint32_t TIMEOUT = 100;
     BluetoothCommunicationProvider::BluetoothCommunicationProvider() {
         huart2.Instance = USART2;
         huart2.Init.BaudRate = 9600;
@@ -43,14 +43,28 @@ namespace sys {
         }
     }
 
-    void BluetoothCommunicationProvider::transmitMessage(const char* bytes, std::size_t length) {
-        auto result = HAL_UART_Transmit(&huart2, const_cast<std::uint8_t*>(reinterpret_cast<const std::uint8_t*>(bytes)), static_cast<std::uint16_t>(length), 1000);
+    void BluetoothCommunicationProvider::transmitSizedMessage(const char* bytes, std::uint32_t length) {
+        HAL_StatusTypeDef result;
+        result = HAL_UART_Transmit(&huart2, reinterpret_cast<std::uint8_t*>(&length), sizeof(std::uint32_t), TIMEOUT);
+        if (result != HAL_OK)
+            throw std::runtime_error("Failed to transmit message through bluetooth");
+        result = HAL_UART_Transmit(&huart2, const_cast<std::uint8_t*>(reinterpret_cast<const std::uint8_t*>(bytes)), static_cast<std::uint16_t>(length), TIMEOUT);
         if (result != HAL_OK)
             throw std::runtime_error("Failed to transmit message through bluetooth");
     }
 
-    void BluetoothCommunicationProvider::receiveMessage(char *bytes, std::size_t length) {
-        auto result = HAL_UART_Receive(&huart2, reinterpret_cast<std::uint8_t*>(bytes), static_cast<std::uint16_t>(length), 1000000000);
+    bool BluetoothCommunicationProvider::hasSizedMessage() {
+        return __HAL_UART_GET_FLAG(&huart2, UART_FLAG_RXNE);
+    }
+
+    void BluetoothCommunicationProvider::receiveSizedMessage(char *bytes) {
+        HAL_StatusTypeDef result;
+        std::uint32_t length;
+
+        result = HAL_UART_Receive(&huart2, reinterpret_cast<std::uint8_t*>(&length), sizeof(std::uint32_t), TIMEOUT);
+        if (result != HAL_OK)
+            throw std::runtime_error("Failed to receive message through bluetooth");
+        result = HAL_UART_Receive(&huart2, reinterpret_cast<std::uint8_t*>(bytes), static_cast<std::uint16_t>(length), TIMEOUT);
         if (result != HAL_OK)
             throw std::runtime_error("Failed to receive message through bluetooth");
     }

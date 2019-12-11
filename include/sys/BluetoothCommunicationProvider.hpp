@@ -1,12 +1,12 @@
 #pragma once
-#include <vector>
-#include <cstddef>
+#include <cstdint>
 
 namespace sys {
     class BluetoothCommunicationProvider {
     public:
         BluetoothCommunicationProvider();
-        void transmitMessage(const char* bytes, std::size_t length);
-        void receiveMessage(char* bytes, std::size_t length);
+        bool hasSizedMessage();
+        void transmitSizedMessage(const char* bytes, std::uint32_t length);
+        void receiveSizedMessage(char* bytes);
     };
 }

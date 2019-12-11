@@ -65,6 +65,9 @@ namespace audio {
             playerDeinitialize();
         reader = std::make_unique<WavAudioReader>(sourcePath);
         state = State::Stopped;
+
+        if (onMediumChanged != nullptr)
+            onMediumChanged(sourcePath);
     }
 
     void AudioPlayer::play() {
@@ -113,6 +116,9 @@ namespace audio {
         this->volume = volume;
         if (state == State::Playing)
             playerSetVolume();
+
+        if (onVolumeChanged != nullptr)
+            onVolumeChanged(volume);
     }
 
     void AudioPlayer::setAudioFilter(filter::AudioFilter &filter) {
@@ -153,6 +159,18 @@ namespace audio {
                / std::round(static_cast<float>(reader->getMetadata().getBitsPerSample()) / 8.0F);
     }
 
+    void AudioPlayer::setOnProgressChanged(const std::function<void(float, float)> &onProgressChanged) {
+        this->onProgressChanged = onProgressChanged;
+    }
+
+    void AudioPlayer::setOnMediumChanged(const std::function<void(const std::string &)> &onMediumChanged) {
+        this->onMediumChanged = onMediumChanged;
+    }
+
+    void AudioPlayer::setOnVolumeChanged(const std::function<void(unsigned)> &onVolumeChanged) {
+        this->onVolumeChanged = onVolumeChanged;
+    }
+
     void AudioPlayer::progress() {
         if (!isPlaying())
             return;
@@ -175,6 +193,8 @@ namespace audio {
             cachedBuffer.clear();
             playerPlayBuffer();
             bufferState = BufferState::Started;
+            if (onProgressChanged != nullptr)
+                onProgressChanged(getCurrentTime(), getEndTime());
         }
     }
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <memory>
 #include <string>
 #include <audio/filter/AudioFilter.hpp>
@@ -37,6 +38,10 @@ namespace audio {
         [[nodiscard]] float getCurrentTime() const;
         [[nodiscard]] float getEndTime() const;
 
+        void setOnProgressChanged(const std::function<void(float,float)>& onProgressChanged);
+        void setOnMediumChanged(const std::function<void(const std::string&)>& onMediumChanged);
+        void setOnVolumeChanged(const std::function<void(unsigned)>& onVolumeChanged);
+
     private:
         enum class BufferState {
             Done,
@@ -67,6 +72,10 @@ namespace audio {
         std::vector<std::uint16_t> playingBuffer;
         std::vector<std::uint16_t> cachedBuffer;
         filter::AudioFilter* filter;
+
+        std::function<void(float,float)> onProgressChanged;
+        std::function<void(const std::string&)> onMediumChanged;
+        std::function<void(unsigned)> onVolumeChanged;
 
         static AudioPlayer* instance;
     };
