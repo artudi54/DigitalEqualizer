@@ -39,7 +39,7 @@ set(SOURCES
 	src/sys/LedDiodeControl.cpp
 	src/sys/Task.cpp
 	src/main.cpp
-		src/sys/BluetoothCommunicationProvider.cpp include/sys/BluetoothCommunicationProvider.hpp src/service/NotificationService.cpp include/service/NotificationService.hpp src/service/RequestHandler.cpp include/service/RequestHandler.hpp src/audio/PlaylistPlayer.cpp include/audio/PlaylistPlayer.hpp)
+		src/sys/BluetoothCommunicationProvider.cpp include/sys/BluetoothCommunicationProvider.hpp src/service/NotificationService.cpp include/service/NotificationService.hpp src/service/RequestHandler.cpp include/service/RequestHandler.hpp src/audio/PlaylistPlayer.cpp include/audio/PlaylistPlayer.hpp src/DigitalEqualizer.cpp include/DigitalEqualizer.hpp)
 
 # Executable
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
