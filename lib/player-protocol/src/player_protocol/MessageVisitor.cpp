@@ -7,12 +7,14 @@
 #include <player_protocol/request/ChangeMediumRequest.hpp>
 #include <player_protocol/request/ChangeVolumeRequest.hpp>
 #include <player_protocol/request/PauseRequest.hpp>
+#include <player_protocol/request/PlaylistRequest.hpp>
 #include <player_protocol/request/PlayRequest.hpp>
 #include <player_protocol/request/SeekRequest.hpp>
 #include <player_protocol/request/StopRequest.hpp>
 
 #include <player_protocol/response/ErrorResponse.hpp>
 #include <player_protocol/response/OkResponse.hpp>
+#include <player_protocol/response/PlaylistResponse.hpp>
 
 namespace player_protocol {
     MessageVisitor::~MessageVisitor() = default;
@@ -43,6 +45,9 @@ namespace player_protocol {
         handleInvalidMessage(message);
     }
 
+    void MessageClientVisitor::handleMessage(const request::PlaylistRequest &message) {
+        handleInvalidMessage(message);
+    }
 
 
     void MessageServerVisitor::handleMessage(const changed::MediumChangedMessage &message) {
@@ -62,6 +67,10 @@ namespace player_protocol {
     }
 
     void MessageServerVisitor::handleMessage(const response::OkResponse &message) {
+        handleInvalidMessage(message);
+    }
+
+    void MessageServerVisitor::handleMessage(const response::PlaylistResponse &message) {
         handleInvalidMessage(message);
     }
 }
