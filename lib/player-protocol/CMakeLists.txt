@@ -3,18 +3,51 @@ project(player-protocol LANGUAGES CXX)
 
 # Source code
 SET(HEADERS
-        include/player_protocol/changed/MediumChangedMessage.hpp
+    include/player_protocol/changed/MediumChangedMessage.hpp
+    include/player_protocol/changed/TimeChangedMessage.hpp
+	include/player_protocol/changed/VolumeChangedMessage.hpp
+
+	include/player_protocol/request/ChangeMediumRequest.hpp
+	include/player_protocol/request/ChangeVolumeRequest.hpp
+	include/player_protocol/request/PauseRequest.hpp
+	include/player_protocol/request/PlaylistRequest.hpp
+	include/player_protocol/request/PlayRequest.hpp
+	include/player_protocol/request/SeekRequest.hpp
+	include/player_protocol/request/StopRequest.hpp
+
+	include/player_protocol/response/ErrorResponse.hpp
+	include/player_protocol/response/OkResponse.hpp
+	include/player_protocol/response/PlaylistResponse.hpp
+
 	include/player_protocol/Message.hpp
 	include/player_protocol/MessageSerializer.hpp
 	include/player_protocol/MessageType.hpp
-        include/player_protocol/changed/TimeChangedMessage.hpp
+	include/player_protocol/MessageVisitor.hpp
 )
 set(SOURCES
-		src/player_protocol/changed/MediumChangedMessage.cpp
+	src/player_protocol/changed/MediumChangedMessage.cpp
+	src/player_protocol/changed/TimeChangedMessage.cpp
+	src/player_protocol/changed/VolumeChangedMessage.cpp
+
+	src/player_protocol/request/ChangeMediumRequest.cpp
+	src/player_protocol/request/ChangeVolumeRequest.cpp
+	src/player_protocol/request/PauseRequest.cpp
+	src/player_protocol/request/PlaylistRequest.cpp
+	src/player_protocol/request/PlayRequest.cpp
+	src/player_protocol/request/SeekRequest.cpp
+	src/player_protocol/request/StopRequest.cpp
+
+	src/player_protocol/response/ErrorResponse.cpp
+	src/player_protocol/response/OkResponse.cpp
+	src/player_protocol/response/PlaylistResponse.cpp
+
 	src/player_protocol/Message.cpp
 	src/player_protocol/MessageSerializer.cpp
-		src/player_protocol/changed/TimeChangedMessage.cpp
-		src/player_protocol/changed/VolumeChangedMessage.cpp include/player_protocol/changed/VolumeChangedMessage.hpp src/player_protocol/request/PlayRequest.cpp include/player_protocol/request/PlayRequest.hpp src/player_protocol/request/ChangeMediumRequest.cpp include/player_protocol/request/ChangeMediumRequest.hpp src/player_protocol/request/ChangeVolumeRequest.cpp include/player_protocol/request/ChangeVolumeRequest.hpp src/player_protocol/request/PauseRequest.cpp include/player_protocol/request/PauseRequest.hpp src/player_protocol/request/StopRequest.cpp include/player_protocol/request/StopRequest.hpp src/player_protocol/request/SeekRequest.cpp include/player_protocol/request/SeekRequest.hpp src/player_protocol/response/OkResponse.cpp include/player_protocol/response/OkResponse.hpp src/player_protocol/response/ErrorResponse.cpp include/player_protocol/response/ErrorResponse.hpp src/player_protocol/MessageFactory.cpp src/player_protocol/MessageFactory.hpp src/player_protocol/MessageVisitor.cpp include/player_protocol/MessageVisitor.hpp src/player_protocol/request/PlaylistRequest.cpp include/player_protocol/request/PlaylistRequest.hpp src/player_protocol/response/PlaylistResponse.cpp include/player_protocol/response/PlaylistResponse.hpp)
+	src/player_protocol/MessageVisitor.cpp
+
+	src/player_protocol/MessageFactory.cpp
+	src/player_protocol/MessageFactory.hpp
+)
 
 # Executable
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
