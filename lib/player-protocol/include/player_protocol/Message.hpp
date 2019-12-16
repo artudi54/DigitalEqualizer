@@ -10,4 +10,10 @@ namespace player_protocol {
         [[nodiscard]] virtual std::uint32_t serialize(char* data) const = 0;
         virtual void deserialize(const char* data) = 0;
     };
+
+    class EmptyMessage : public Message {
+    public:
+        [[nodiscard]] std::uint32_t serialize(char* data) const final;
+        void deserialize(const char* data) final;
+    };
 }

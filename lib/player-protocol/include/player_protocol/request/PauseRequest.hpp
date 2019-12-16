@@ -2,10 +2,8 @@
 #include <player_protocol/Message.hpp>
 
 namespace player_protocol::request {
-    class PauseRequest : public Message {
+    class PauseRequest : public EmptyMessage {
     public:
         [[nodiscard]] MessageType getMessageType() const override;
-        [[nodiscard]] std::uint32_t serialize(char *data) const override;
-        void deserialize(const char *data) override;
     };
 }
