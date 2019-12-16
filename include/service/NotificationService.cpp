@@ -12,7 +12,7 @@ namespace service {
         : communicationProvider(communicationProvider)
         , buffer{} {}
 
-    void NotificationService::initializeCallbacks(audio::AudioPlayer &player) {
+    void NotificationService::initializeCallbacks(audio::PlaylistPlayer &player) {
         player.setOnProgressChanged([&](auto currentTime, auto totalTime) { handleTimeChanged(currentTime, totalTime); });
         player.setOnMediumChanged([&](auto& medium) { handleMediumChanged(medium); });
         player.setOnVolumeChanged([&](auto volume) { handleVolumeChanged(volume); });

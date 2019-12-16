@@ -5,7 +5,7 @@
 namespace service {
 
     RequestHandler::RequestHandler(sys::BluetoothCommunicationProvider &communicationProvider,
-                                   audio::AudioPlayer &player)
+                                   audio::PlaylistPlayer &player)
         : communicationProvider(communicationProvider)
         , player(player) {}
 
@@ -24,6 +24,6 @@ namespace service {
     }
 
     void RequestHandler::handlePause() {
-
+        player.pause();
     }
 }

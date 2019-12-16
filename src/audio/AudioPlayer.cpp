@@ -106,6 +106,10 @@ namespace audio {
         state = State::Stopped;
     }
 
+    void AudioPlayer::seek(float time) {
+        //TODO: finish
+    }
+
     unsigned AudioPlayer::getVolume() const {
         return volume;
     }
@@ -118,7 +122,7 @@ namespace audio {
             playerSetVolume();
 
         if (onVolumeChanged != nullptr)
-            onVolumeChanged(volume);
+            onVolumeChanged(getVolume());
     }
 
     void AudioPlayer::setAudioFilter(filter::AudioFilter &filter) {

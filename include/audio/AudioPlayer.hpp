@@ -11,6 +11,7 @@ namespace audio {
         friend class Handlers;
     public:
         enum class State {
+            //TODO: move state to new file
             NoSource,
             Stopped,
             Playing,
@@ -23,8 +24,9 @@ namespace audio {
         void play();
         void pause();
         void stop();
+        void seek(float time);
 
-        [[nodiscard]] unsigned getVolume() const;
+        [[nodiscard]] unsigned getVolume() const; // TODO: make std::uint32_t
         void setVolume(unsigned volume);
 
         void setAudioFilter(filter::AudioFilter& filter);

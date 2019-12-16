@@ -1,12 +1,12 @@
 #pragma once
-#include <audio/AudioPlayer.hpp>
+#include <audio/PlaylistPlayer.hpp>
 #include <sys/BluetoothCommunicationProvider.hpp>
 
 namespace service {
     class NotificationService {
     public:
         explicit NotificationService(sys::BluetoothCommunicationProvider& communicationProvider);
-        void initializeCallbacks(audio::AudioPlayer& player);
+        void initializeCallbacks(audio::PlaylistPlayer& player);
     private:
         void handleTimeChanged(float currentTime, float totalTime);
         void handleMediumChanged(const std::string& medium);
