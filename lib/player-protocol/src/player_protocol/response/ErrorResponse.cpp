@@ -31,4 +31,8 @@ namespace player_protocol::response {
         std::memcpy(errorMessage.data(), data + offset, stringLength);
         offset += stringLength;
     }
+
+    void ErrorResponse::visit(MessageVisitor &visitor) const {
+        visitor.handleMessage(*this);
+    }
 }

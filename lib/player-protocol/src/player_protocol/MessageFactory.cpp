@@ -40,6 +40,8 @@ namespace player_protocol {
                 return std::make_unique<response::OkResponse>();
             case MessageType::RESPONSE_ERROR:
                 return std::make_unique<response::ErrorResponse>();
+            default:
+                throw std::invalid_argument("Unknown message type");
         }
     }
 }

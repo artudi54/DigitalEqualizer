@@ -14,4 +14,8 @@ namespace player_protocol::request {
     void ChangeVolumeRequest::deserialize(const char *data) {
         std::memcpy(&newVolume, data, sizeof(std::uint32_t));
     }
+
+    void ChangeVolumeRequest::visit(MessageVisitor &visitor) const {
+        visitor.handleMessage(*this);
+    }
 }

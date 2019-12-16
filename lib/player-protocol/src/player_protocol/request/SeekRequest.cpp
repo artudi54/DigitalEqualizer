@@ -14,4 +14,8 @@ namespace player_protocol::request {
     void SeekRequest::deserialize(const char *data) {
         std::memcpy(&position, data, sizeof(float));
     }
+
+    void SeekRequest::visit(MessageVisitor &visitor) const {
+        visitor.handleMessage(*this);
+    }
 }

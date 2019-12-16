@@ -31,4 +31,8 @@ namespace player_protocol::request {
         std::memcpy(newMedium.data(), data + offset, stringLength);
         offset += stringLength;
     }
+
+    void ChangeMediumRequest::visit(MessageVisitor &visitor) const {
+        visitor.handleMessage(*this);
+    }
 }

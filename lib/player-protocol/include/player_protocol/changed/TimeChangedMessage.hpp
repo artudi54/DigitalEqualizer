@@ -7,6 +7,7 @@ namespace player_protocol::changed {
         [[nodiscard]] MessageType getMessageType() const override;
         [[nodiscard]] std::uint32_t serialize(char *data) const override;
         void deserialize(const char *data) override;
+        void visit(MessageVisitor& visitor) const override;
 
         float currentTime;
         float totalTime;

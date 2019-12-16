@@ -31,4 +31,8 @@ namespace player_protocol::changed {
         std::memcpy(medium.data(), data + offset, stringLength);
         offset += stringLength;
     }
+
+    void MediumChangedMessage::visit(MessageVisitor &visitor) const {
+        visitor.handleMessage(*this);
+    }
 }

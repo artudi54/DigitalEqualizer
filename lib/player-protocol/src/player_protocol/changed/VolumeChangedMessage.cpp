@@ -14,6 +14,10 @@ namespace player_protocol::changed {
     void VolumeChangedMessage::deserialize(const char *data) {
         std::memcpy(&volume, data, sizeof(std::uint32_t));
     }
+
+    void VolumeChangedMessage::visit(MessageVisitor &visitor) const {
+        visitor.handleMessage(*this);
+    }
 }
 
 

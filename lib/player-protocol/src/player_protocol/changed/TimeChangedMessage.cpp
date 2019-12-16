@@ -27,4 +27,8 @@ namespace player_protocol::changed {
         std::memcpy(&totalTime, data + offset, sizeof(float));
         offset += sizeof(float);
     }
+
+    void TimeChangedMessage::visit(MessageVisitor &visitor) const {
+        visitor.handleMessage(*this);
+    }
 }
