@@ -3,18 +3,18 @@ project(player-protocol LANGUAGES CXX)
 
 # Source code
 SET(HEADERS
-	include/player_protocol/MediumChangedMessage.hpp
+        include/player_protocol/changed/MediumChangedMessage.hpp
 	include/player_protocol/Message.hpp
 	include/player_protocol/MessageSerializer.hpp
 	include/player_protocol/MessageType.hpp
-	include/player_protocol/TimeChangedMessage.hpp
+        include/player_protocol/changed/TimeChangedMessage.hpp
 )
 set(SOURCES
-	src/player_protocol/MediumChangedMessage.cpp
+		src/player_protocol/changed/MediumChangedMessage.cpp
 	src/player_protocol/Message.cpp
 	src/player_protocol/MessageSerializer.cpp
-	src/player_protocol/TimeChangedMessage.cpp
-		src/player_protocol/VolumeChanged.cpp include/player_protocol/VolumeChanged.hpp src/player_protocol/PlayRequest.cpp include/player_protocol/PlayRequest.hpp)
+		src/player_protocol/changed/TimeChangedMessage.cpp
+		src/player_protocol/changed/VolumeChangedMessage.cpp include/player_protocol/changed/VolumeChangedMessage.hpp src/player_protocol/request/PlayRequest.cpp include/player_protocol/request/PlayRequest.hpp src/player_protocol/request/ChangeMediumRequest.cpp include/player_protocol/request/ChangeMediumRequest.hpp src/player_protocol/request/ChangeVolumeRequest.cpp include/player_protocol/request/ChangeVolumeRequest.hpp src/player_protocol/request/PauseRequest.cpp include/player_protocol/request/PauseRequest.hpp src/player_protocol/request/StopRequest.cpp include/player_protocol/request/StopRequest.hpp src/player_protocol/request/FastForwardRequest.cpp include/player_protocol/request/FastForwardRequest.hpp src/player_protocol/response/OkResponse.cpp include/player_protocol/response/OkResponse.hpp src/player_protocol/response/ErrorResponse.cpp include/player_protocol/response/ErrorResponse.hpp)
 
 # Executable
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
@@ -34,6 +34,9 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE
 		src
 		include/player_protocol
+		include/player_protocol/changed
+		include/player_protocol/request
+		include/player_protocol/response
 )
 
 # Optimization level

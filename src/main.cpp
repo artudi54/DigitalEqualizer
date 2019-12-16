@@ -20,9 +20,9 @@ int main() {
 
         audio::filter::DigitalEqualizerParameters parameters;
         parameters.setFrequenciesType(audio::filter::DigitalEqualizerParameters::FrequenciesType::ISOOctave);
-        parameters.setDbGainAt(0, -10);
-        parameters.setDbGainAt(1, -10);
-        parameters.setDbGainAt(2, -10);
+        parameters.setDbGainAt(0, 5);
+        parameters.setDbGainAt(1, 5);
+        parameters.setDbGainAt(2, 5);
         filter.setParameters(parameters);
         audioPlayer.setAudioFilter(filter);
 
@@ -31,7 +31,7 @@ int main() {
 
 
         audioPlayer.setSource("0:/sample16k.wav");
-        audioPlayer.setVolume(60);
+        audioPlayer.setVolume(70);
 //        audioPlayer.play();
 
 

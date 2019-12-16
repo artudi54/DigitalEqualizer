@@ -1,9 +1,8 @@
 #include "PlayRequest.hpp"
 
-namespace player_protocol {
-
+namespace player_protocol::request {
     MessageType PlayRequest::getMessageType() const {
-        return MessageType::PLAY_REQUEST;
+        return MessageType::REQUEST_PLAY;
     }
 
     std::uint32_t PlayRequest::serialize(char *data) const {

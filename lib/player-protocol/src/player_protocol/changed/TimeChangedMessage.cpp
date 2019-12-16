@@ -1,9 +1,9 @@
 #include "TimeChangedMessage.hpp"
 #include <cstring>
 
-namespace player_protocol {
-    MessageType player_protocol::TimeChangedMessage::getMessageType() const {
-        return MessageType::TIME_CHANGED;
+namespace player_protocol::changed {
+    MessageType TimeChangedMessage::getMessageType() const {
+        return MessageType::CHANGED_TIME;
     }
 
     std::uint32_t TimeChangedMessage::serialize(char *data) const {

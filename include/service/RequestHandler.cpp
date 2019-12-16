@@ -1,6 +1,6 @@
 #include "RequestHandler.hpp"
 #include <player_protocol/MessageSerializer.hpp>
-#include <player_protocol/PlayRequest.hpp>
+#include <player_protocol/request/PlayRequest.hpp>
 
 namespace service {
 
@@ -15,7 +15,7 @@ namespace service {
 
         communicationProvider.receiveSizedMessage(buffer.data());
         auto message = player_protocol::MessageSerializer::deserialize(buffer.data());
-        if (dynamic_cast<player_protocol::PlayRequest*>(message.get()))
+        if (dynamic_cast<player_protocol::request::PlayRequest*>(message.get()))
             handlePlay();
     }
 

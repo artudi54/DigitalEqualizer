@@ -1,10 +1,10 @@
 #include "MediumChangedMessage.hpp"
 #include <cstring>
 
-namespace player_protocol {
+namespace player_protocol::changed {
 
     MessageType MediumChangedMessage::getMessageType() const {
-        return MessageType::MEDIUM_CHANGED;
+        return MessageType::CHANGED_MEDIUM;
     }
 
     std::uint32_t MediumChangedMessage::serialize(char *data) const {

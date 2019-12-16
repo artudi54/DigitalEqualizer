@@ -5,7 +5,7 @@
 namespace service {
     class NotificationService {
     public:
-        NotificationService(sys::BluetoothCommunicationProvider& communicationProvider);
+        explicit NotificationService(sys::BluetoothCommunicationProvider& communicationProvider);
         void initializeCallbacks(audio::AudioPlayer& player);
     private:
         void handleTimeChanged(float currentTime, float totalTime);

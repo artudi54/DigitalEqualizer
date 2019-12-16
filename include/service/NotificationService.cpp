@@ -2,9 +2,9 @@
 
 #include <player_protocol/MessageSerializer.hpp>
 
-#include <player_protocol/MediumChangedMessage.hpp>
-#include <player_protocol/TimeChangedMessage.hpp>
-#include <player_protocol/VolumeChanged.hpp>
+#include <player_protocol/changed/MediumChangedMessage.hpp>
+#include <player_protocol/changed/TimeChangedMessage.hpp>
+#include <player_protocol/changed/VolumeChangedMessage.hpp>
 
 namespace service {
 
@@ -19,7 +19,7 @@ namespace service {
     }
 
     void NotificationService::handleTimeChanged(float currentTime, float totalTime) {
-        player_protocol::TimeChangedMessage message;
+        player_protocol::changed::TimeChangedMessage message;
         message.currentTime = currentTime;
         message.totalTime = totalTime;
         std::uint32_t size = player_protocol::MessageSerializer::serialize(message, buffer.data());
@@ -27,14 +27,14 @@ namespace service {
     }
 
     void NotificationService::handleMediumChanged(const std::string &medium) {
-        player_protocol::MediumChangedMessage message;
+        player_protocol::changed::MediumChangedMessage message;
         message.medium = medium;
         std::uint32_t size = player_protocol::MessageSerializer::serialize(message, buffer.data());
         communicationProvider.transmitSizedMessage(buffer.data(), size);
     }
 
     void NotificationService::handleVolumeChanged(std::uint32_t volume) {
-        player_protocol::VolumeChanged message;
+        player_protocol::changed::VolumeChangedMessage message;
         message.volume = volume;
         std::uint32_t size = player_protocol::MessageSerializer::serialize(message, buffer.data());
         communicationProvider.transmitSizedMessage(buffer.data(), size);
