@@ -2,6 +2,12 @@
 #include <cstring>
 
 namespace player_protocol::request {
+    SeekRequest::SeekRequest()
+        : position(0.0f) {}
+
+    SeekRequest::SeekRequest(float position)
+        : position(position) {}
+
     MessageType SeekRequest::getMessageType() const {
         return MessageType::REQUEST_SEEK;
     }

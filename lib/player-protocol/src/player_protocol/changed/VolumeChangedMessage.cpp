@@ -2,6 +2,12 @@
 #include <cstring>
 
 namespace player_protocol::changed {
+    VolumeChangedMessage::VolumeChangedMessage()
+            : volume(0) {}
+
+    VolumeChangedMessage::VolumeChangedMessage(std::uint32_t volume)
+            : volume(volume) {}
+
     MessageType VolumeChangedMessage::getMessageType() const {
         return MessageType::CHANGED_VOLUME;
     }

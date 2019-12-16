@@ -2,6 +2,11 @@
 #include <cstring>
 
 namespace player_protocol::response {
+    ErrorResponse::ErrorResponse()
+        : errorMessage() {}
+
+    ErrorResponse::ErrorResponse(const std::string &errorMessage)
+        : errorMessage(errorMessage) {}
 
     MessageType ErrorResponse::getMessageType() const {
         return MessageType::RESPONSE_ERROR;

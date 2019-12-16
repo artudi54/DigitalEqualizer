@@ -2,6 +2,14 @@
 #include <cstring>
 
 namespace player_protocol::changed {
+    TimeChangedMessage::TimeChangedMessage()
+        : currentTime(0.0f)
+        , totalTime(0.0f) {}
+
+    TimeChangedMessage::TimeChangedMessage(float currentTime, float totalTime)
+        : currentTime(currentTime)
+        , totalTime(totalTime) {}
+
     MessageType TimeChangedMessage::getMessageType() const {
         return MessageType::CHANGED_TIME;
     }

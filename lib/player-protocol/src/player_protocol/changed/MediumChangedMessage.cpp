@@ -2,6 +2,11 @@
 #include <cstring>
 
 namespace player_protocol::changed {
+    MediumChangedMessage::MediumChangedMessage()
+        : medium() {}
+
+    MediumChangedMessage::MediumChangedMessage(const std::string &medium)
+        : medium(medium) {}
 
     MessageType MediumChangedMessage::getMessageType() const {
         return MessageType::CHANGED_MEDIUM;

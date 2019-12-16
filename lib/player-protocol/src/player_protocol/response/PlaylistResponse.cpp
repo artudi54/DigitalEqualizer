@@ -2,6 +2,12 @@
 #include <cstring>
 
 namespace player_protocol::response {
+    PlaylistResponse::PlaylistResponse()
+        : files() {}
+
+    PlaylistResponse::PlaylistResponse(const std::vector<std::string> &files)
+        : files(files) {}
+
     MessageType PlaylistResponse::getMessageType() const {
         return MessageType::RESPONSE_PLAYLIST;
     }

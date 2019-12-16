@@ -2,6 +2,11 @@
 #include <cstring>
 
 namespace player_protocol::request {
+    ChangeMediumRequest::ChangeMediumRequest()
+        : newMedium() {}
+
+    ChangeMediumRequest::ChangeMediumRequest(const std::string &newMedium)
+        : newMedium(newMedium) {}
 
     MessageType ChangeMediumRequest::getMessageType() const {
         return MessageType::REQUEST_CHANGE_MEDIUM;

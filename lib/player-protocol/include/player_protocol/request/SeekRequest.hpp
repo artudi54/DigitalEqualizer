@@ -4,6 +4,9 @@
 namespace player_protocol::request {
     class SeekRequest : public Message {
     public:
+        SeekRequest();
+        explicit SeekRequest(float position);
+
         [[nodiscard]] MessageType getMessageType() const override;
         [[nodiscard]] std::uint32_t serialize(char *data) const override;
         void deserialize(const char *data) override;

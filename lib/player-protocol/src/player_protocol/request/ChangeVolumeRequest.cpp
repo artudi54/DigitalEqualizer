@@ -2,6 +2,12 @@
 #include <cstring>
 
 namespace player_protocol::request {
+    ChangeVolumeRequest::ChangeVolumeRequest()
+            : newVolume(0) {}
+
+    ChangeVolumeRequest::ChangeVolumeRequest(std::uint32_t newVolume)
+        : newVolume(newVolume) {}
+
     MessageType ChangeVolumeRequest::getMessageType() const {
         return MessageType::REQUEST_CHANGE_VOLUME;
     }
