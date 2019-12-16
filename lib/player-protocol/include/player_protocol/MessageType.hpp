@@ -9,9 +9,9 @@ namespace player_protocol {
 
         REQUEST_CHANGE_MEDIUM,
         REQUEST_CHANGE_VOLUME,
-        REQUEST_FAST_FORWARD,
         REQUEST_PAUSE,
         REQUEST_PLAY,
+        REQUEST_SEEK,
         REQUEST_STOP,
 
         RESPONSE_OK,
