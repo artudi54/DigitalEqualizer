@@ -12,6 +12,12 @@ namespace player_protocol::changed {
         void deserialize(const char *data) override;
         void visit(MessageVisitor& visitor) const override;
 
+        [[nodiscard]] float getCurrentTime() const;
+        void setCurrentTime(float currentTime);
+        [[nodiscard]] float getTotalTime() const;
+        void setTotalTime(float totalTime);
+
+    private:
         float currentTime;
         float totalTime;
     };

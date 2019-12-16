@@ -12,6 +12,10 @@ namespace player_protocol::request {
         void deserialize(const char *data) override;
         void visit(MessageVisitor& visitor) const override;
 
+        [[nodiscard]] float getPosition() const;
+        void setPosition(float position);
+
+    private:
         float position;
     };
 }

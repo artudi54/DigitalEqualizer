@@ -12,6 +12,10 @@ namespace player_protocol::changed {
         void deserialize(const char *data) override;
         void visit(MessageVisitor& visitor) const override;
 
+        [[nodiscard]] std::uint32_t getVolume() const;
+        void setVolume(uint32_t volume);
+
+    private:
         std::uint32_t volume;
     };
 }

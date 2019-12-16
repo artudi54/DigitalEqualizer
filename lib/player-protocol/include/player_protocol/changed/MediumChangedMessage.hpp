@@ -13,6 +13,10 @@ namespace player_protocol::changed {
         void deserialize(const char *data) override;
         void visit(MessageVisitor& visitor) const override;
 
+        [[nodiscard]] const std::string &getMedium() const;
+        void setMedium(const std::string &medium);
+
+    private:
         std::string medium;
     };
 }

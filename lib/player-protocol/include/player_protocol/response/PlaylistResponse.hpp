@@ -15,6 +15,10 @@ namespace player_protocol::response {
         void deserialize(const char *data) override;
         void visit(MessageVisitor &visitor) const override;
 
+        [[nodiscard]] const std::vector<std::string> &getFiles() const;
+        void setFiles(const std::vector<std::string> &files);
+
+    private:
         std::vector<std::string> files;
     };
 }

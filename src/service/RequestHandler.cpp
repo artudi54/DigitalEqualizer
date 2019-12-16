@@ -24,7 +24,7 @@ namespace service {
 
     void RequestHandler::handleMessage(const player_protocol::request::ChangeVolumeRequest &message) {
         try {
-            player.setVolume(message.newVolume);
+            player.setVolume(message.getNewVolume());
         }
         catch (std::exception& exc) {
         }

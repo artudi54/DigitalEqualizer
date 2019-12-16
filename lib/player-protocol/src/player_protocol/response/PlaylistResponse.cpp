@@ -54,4 +54,12 @@ namespace player_protocol::response {
     void PlaylistResponse::visit(MessageVisitor &visitor) const {
         visitor.handleMessage(*this);
     }
+
+    const std::vector<std::string> &PlaylistResponse::getFiles() const {
+        return files;
+    }
+
+    void PlaylistResponse::setFiles(const std::vector<std::string> &files) {
+        this->files = files;
+    }
 }

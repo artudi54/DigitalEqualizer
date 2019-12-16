@@ -24,6 +24,14 @@ namespace player_protocol::changed {
     void VolumeChangedMessage::visit(MessageVisitor &visitor) const {
         visitor.handleMessage(*this);
     }
+
+    std::uint32_t VolumeChangedMessage::getVolume() const {
+        return volume;
+    }
+
+    void VolumeChangedMessage::setVolume(std::uint32_t volume) {
+        this->volume = volume;
+    }
 }
 
 

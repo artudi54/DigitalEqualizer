@@ -13,6 +13,10 @@ namespace player_protocol::response {
         void deserialize(const char *data) override;
         void visit(MessageVisitor& visitor) const override;
 
+        [[nodiscard]] const std::string &getErrorMessage() const;
+        void setErrorMessage(const std::string &errorMessage);
+
+    private:
         std::string errorMessage;
     };
 }

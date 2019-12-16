@@ -24,4 +24,12 @@ namespace player_protocol::request {
     void SeekRequest::visit(MessageVisitor &visitor) const {
         visitor.handleMessage(*this);
     }
+
+    float SeekRequest::getPosition() const {
+        return position;
+    }
+
+    void SeekRequest::setPosition(float position) {
+        this->position = position;
+    }
 }

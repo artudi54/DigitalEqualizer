@@ -39,4 +39,20 @@ namespace player_protocol::changed {
     void TimeChangedMessage::visit(MessageVisitor &visitor) const {
         visitor.handleMessage(*this);
     }
+
+    float TimeChangedMessage::getCurrentTime() const {
+        return currentTime;
+    }
+
+    void TimeChangedMessage::setCurrentTime(float currentTime) {
+        this->currentTime = currentTime;
+    }
+
+    float TimeChangedMessage::getTotalTime() const {
+        return totalTime;
+    }
+
+    void TimeChangedMessage::setTotalTime(float totalTime) {
+        this->totalTime = totalTime;
+    }
 }

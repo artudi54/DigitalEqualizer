@@ -24,4 +24,12 @@ namespace player_protocol::request {
     void ChangeVolumeRequest::visit(MessageVisitor &visitor) const {
         visitor.handleMessage(*this);
     }
+
+    std::uint32_t ChangeVolumeRequest::getNewVolume() const {
+        return newVolume;
+    }
+
+    void ChangeVolumeRequest::setNewVolume(std::uint32_t newVolume) {
+        this->newVolume = newVolume;
+    }
 }

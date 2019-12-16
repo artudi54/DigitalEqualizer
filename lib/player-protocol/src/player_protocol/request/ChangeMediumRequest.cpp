@@ -40,4 +40,12 @@ namespace player_protocol::request {
     void ChangeMediumRequest::visit(MessageVisitor &visitor) const {
         visitor.handleMessage(*this);
     }
+
+    const std::string &ChangeMediumRequest::getNewMedium() const {
+        return newMedium;
+    }
+
+    void ChangeMediumRequest::setNewMedium(const std::string &newMedium) {
+        this->newMedium = newMedium;
+    }
 }

@@ -40,4 +40,12 @@ namespace player_protocol::response {
     void ErrorResponse::visit(MessageVisitor &visitor) const {
         visitor.handleMessage(*this);
     }
+
+    const std::string &ErrorResponse::getErrorMessage() const {
+        return errorMessage;
+    }
+
+    void ErrorResponse::setErrorMessage(const std::string &errorMessage) {
+        this->errorMessage = errorMessage;
+    }
 }

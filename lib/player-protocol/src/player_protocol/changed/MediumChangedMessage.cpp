@@ -40,4 +40,12 @@ namespace player_protocol::changed {
     void MediumChangedMessage::visit(MessageVisitor &visitor) const {
         visitor.handleMessage(*this);
     }
+
+    const std::string &MediumChangedMessage::getMedium() const {
+        return medium;
+    }
+
+    void MediumChangedMessage::setMedium(const std::string &medium) {
+        this->medium = medium;
+    }
 }
