@@ -24,6 +24,14 @@ namespace audio {
         return filePaths[idx];
     }
 
+    const std::vector<std::string> &Playlist::getFileNames() const {
+        return fileNames;
+    }
+
+    const std::vector<std::string> &Playlist::getFilePaths() const {
+        return filePaths;
+    }
+
     std::size_t Playlist::getAudioFileCount() const noexcept {
         return fileNames.size();
     }

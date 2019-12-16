@@ -38,6 +38,14 @@ namespace filesystem {
         return filePaths[idx];
     }
 
+    const std::vector<std::string> &DirectoryListing::getFileNames() const {
+        return fileNames;
+    }
+
+    const std::vector<std::string> &DirectoryListing::getFilePaths() const {
+        return filePaths;
+    }
+
     std::size_t DirectoryListing::getFileCount() const noexcept {
         return fileNames.size();
     }
