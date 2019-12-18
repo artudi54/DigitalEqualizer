@@ -1,0 +1,3 @@
+[submodule "lib/player-protocol"]
+	path = lib/player-protocol
+	url = https://github.com/artudi54/player-protocol
