@@ -106,6 +106,7 @@ namespace service {
     }
 
     void RequestHandler::handleInvalidMessage(const Message &message) {
+        (void)message;
         sendMessage(response::ErrorResponse("Server received message not being request"));
     }
 
