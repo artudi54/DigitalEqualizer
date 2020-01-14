@@ -30,6 +30,7 @@ namespace  audio {
         [[nodiscard]] float getCurrentTime() const;
         [[nodiscard]] float getEndTime() const;
 
+        void setOnStateChanged(const std::function<void(AudioPlayer::State)>& onStateChanged);
         void setOnProgressChanged(const std::function<void(float,float)>& onProgressChanged);
         void setOnMediumChanged(const std::function<void(const std::string&)>& onMediumChanged);
         void setOnVolumeChanged(const std::function<void(unsigned)>& onVolumeChanged);

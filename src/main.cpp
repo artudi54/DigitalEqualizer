@@ -7,6 +7,7 @@ int main() {
         DigitalEqualizer equalizer;
         return application.exec();
     }
+
     catch (std::exception &exc) {
         exc.what();
     }

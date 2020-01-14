@@ -43,31 +43,46 @@ namespace audio {
     const std::size_t BUFFER_SIZE = 16384;
 
     AudioPlayer::AudioPlayer()
-            : state(State::NoSource)
-            , bufferState(BufferState::Done)
-            , volume(100)
-            , reader()
-            , playingBuffer()
-            , cachedBuffer() {
+        : state(State::NO_SOURCE)
+        , bufferState(BufferState::Done)
+        , volume(100)
+        , reader()
+        , playingBuffer()
+        , cachedBuffer()
+        , filter(nullptr) {
         if (instance != nullptr)
             throw std::runtime_error("Audio player instance already exists");
         instance = this;
     }
 
     AudioPlayer::~AudioPlayer() {
-        if (state != State::NoSource)
+        if (state != State::NO_SOURCE)
             stop();
         instance = nullptr;
     }
 
     void AudioPlayer::setSource(const std::string &sourcePath) {
-        if (!isEmpty())
+        if (reader != nullptr && sourcePath == reader->getFilePath())
+            return;
+        bool wasPlaying = isPlaying();
+        if (isPlaying() || isPaused())
             playerDeinitialize();
         reader = std::make_unique<WavAudioReader>(sourcePath);
-        state = State::Stopped;
+        updateState(State::STOPPED);
 
         if (onMediumChanged != nullptr)
             onMediumChanged(sourcePath);
+        if (onProgressChanged != nullptr)
+            onProgressChanged(getCurrentTime(), getEndTime());
+        if (wasPlaying)
+            play();
+    }
+
+    void AudioPlayer::unloadSource() {
+        stop();
+        updateState(State::NO_SOURCE);
+        if (onMediumChanged != nullptr)
+            onMediumChanged("");
     }
 
     void AudioPlayer::play() {
@@ -75,13 +90,13 @@ namespace audio {
 
         if (isPaused()) {
             playerUnpause();
-            state = State::Playing;
+            updateState(State::PLAYING);
             return;
         }
         if (isPlaying())
             return;
         playerInitialize();
-        state = State::Playing;
+        updateState(State::PLAYING);
     }
 
     void AudioPlayer::pause() {
@@ -89,13 +104,13 @@ namespace audio {
 
         if (isPaused()) {
             playerUnpause();
-            state = State::Playing;
+            updateState(State::PLAYING);
             return;
         }
         if (isStopped())
             return;
         playerPause();
-        state = State::Paused;
+        updateState(State::PAUSED);
     }
 
     void AudioPlayer::stop() {
@@ -103,11 +118,19 @@ namespace audio {
         if (isStopped())
             return;
         playerDeinitialize();
-        state = State::Stopped;
+        updateState(State::STOPPED);
+        bufferState = BufferState::Done;
+        seek(0.0F);
     }
 
     void AudioPlayer::seek(float time) {
-        //TODO: finish
+        if (time > getEndTime())
+            throw std::runtime_error("Invalid time value - greater than maximal time : (" + std::to_string(time) + "/" + std::to_string(getEndTime()) + ")");
+        float progressRatio = time / getEndTime();
+        auto position = static_cast<std::size_t>(progressRatio * reader->getTotalDataSize());
+        reader->seek(position);
+        if (onProgressChanged != nullptr)
+            onProgressChanged(getCurrentTime(), getEndTime());
     }
 
     unsigned AudioPlayer::getVolume() const {
@@ -115,10 +138,13 @@ namespace audio {
     }
 
     void AudioPlayer::setVolume(unsigned volume) {
+        if (this->volume == volume)
+            return;
         if (volume > 100)
             throw std::invalid_argument("Volume cannot be greater than 100");
+
         this->volume = volume;
-        if (state == State::Playing)
+        if (state == State::PLAYING)
             playerSetVolume();
 
         if (onVolumeChanged != nullptr)
@@ -130,19 +156,19 @@ namespace audio {
     }
 
     bool AudioPlayer::isEmpty() const {
-        return state == State::NoSource;
+        return state == State::NO_SOURCE;
     }
 
     bool AudioPlayer::isPlaying() const {
-        return state == State::Playing;
+        return state == State::PLAYING;
     }
 
     bool AudioPlayer::isPaused() const {
-        return state == State::Paused;
+        return state == State::PAUSED;
     }
 
     bool AudioPlayer::isStopped() const {
-        return state == State::Stopped;
+        return state == State::STOPPED;
     }
 
     AudioPlayer::State AudioPlayer::getState() const {
@@ -161,6 +187,10 @@ namespace audio {
                / static_cast<float>(reader->getMetadata().getChannelsNumber())
                / static_cast<float>(reader->getMetadata().getSamplingRate())
                / std::round(static_cast<float>(reader->getMetadata().getBitsPerSample()) / 8.0F);
+    }
+
+    void AudioPlayer::setOnStateChanged(const std::function<void(State)> &onStateChanged) {
+        this->onStateChanged = onStateChanged;
     }
 
     void AudioPlayer::setOnProgressChanged(const std::function<void(float, float)> &onProgressChanged) {
@@ -251,4 +281,12 @@ namespace audio {
     }
 
     AudioPlayer *AudioPlayer::instance = nullptr;
+
+    void AudioPlayer::updateState(AudioPlayer::State state) {
+        if (state == this->state)
+            return;
+        this->state = state;
+        if (onStateChanged != nullptr)
+            onStateChanged(this->state);
+    }
 }

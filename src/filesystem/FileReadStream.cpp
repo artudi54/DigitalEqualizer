@@ -34,7 +34,12 @@ namespace filesystem {
     }
 
     void FileReadStream::seek(std::size_t position) {
-        if (f_lseek(reinterpret_cast<FIL*>(handle), static_cast<FSIZE_t>(position)))
+        if (f_lseek(reinterpret_cast<FIL*>(handle), static_cast<FSIZE_t>(position)) != FR_OK)
             throw std::runtime_error("Failed to seek to " + std::to_string(position) + " in file '" + filePath + "'");
+    }
+
+    std::size_t FileReadStream::pos() const {
+        FIL* fileHandle = reinterpret_cast<FIL*>(handle);
+        return static_cast<std::size_t>(f_tell(fileHandle));
     }
 }

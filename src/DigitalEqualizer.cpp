@@ -8,8 +8,6 @@ DigitalEqualizer::DigitalEqualizer()
     , requestHandler(communicationProvider, playlistPlayer) {
     setupFilter();
     notificationService.initializeCallbacks(playlistPlayer);
-    playlistPlayer.setCurrentTrackNumber(0);
-    playlistPlayer.setVolume(100);
 }
 
 void DigitalEqualizer::setupFilter() {

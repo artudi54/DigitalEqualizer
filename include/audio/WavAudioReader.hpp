@@ -16,6 +16,8 @@ namespace audio {
 
         [[nodiscard]] bool hasNext() const noexcept;
         void readNext(std::vector<std::uint16_t>& data, std::size_t count);
+
+        void seek(std::size_t pos);
     private:
         void readRiffChunk();
         void readFormatChunk();

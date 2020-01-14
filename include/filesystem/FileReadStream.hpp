@@ -12,6 +12,7 @@ namespace filesystem {
 
         void read(void* buffer, std::size_t count);
         void seek(std::size_t position);
+        std::size_t pos() const;
 
     private:
         void* handle;

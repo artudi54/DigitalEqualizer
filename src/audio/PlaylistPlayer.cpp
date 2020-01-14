@@ -33,8 +33,12 @@ namespace audio {
     }
 
     void PlaylistPlayer::setCurrentTrackNumber(std::uint32_t trackNumber) {
-        player.setSource(playlist.getAudioFilePathAt(trackNumber));
+        if (static_cast<int>(trackNumber) == -1)
+            player.unloadSource();
+        else
+            player.setSource(playlist.getAudioFilePathAt(trackNumber));
         currentTrackNumber = trackNumber;
+
     }
 
     unsigned PlaylistPlayer::getVolume() const {
@@ -81,6 +85,10 @@ namespace audio {
         return player.getEndTime();
     }
 
+    void PlaylistPlayer::setOnStateChanged(const std::function<void(AudioPlayer::State)> &onStateChanged) {
+        player.setOnStateChanged(onStateChanged);
+    }
+
     void PlaylistPlayer::setOnProgressChanged(const std::function<void(float, float)> &onProgressChanged) {
         this->onProgressChanged = onProgressChanged;
     }
@@ -98,8 +106,13 @@ namespace audio {
             onProgressChanged(currentTime, totalTime);
 
         if (currentTime == totalTime && static_cast<std::size_t>(currentTrackNumber) != playlist.getAudioFileCount() - 1) {
-            setCurrentTrackNumber(currentTrackNumber + 1);
-            play();
+            if (static_cast<std::uint32_t>(currentTrackNumber) == playlist.getAudioFileCount() - 1) {
+                setCurrentTrackNumber(static_cast<std::uint32_t>(-1));
+            }
+            else {
+                setCurrentTrackNumber(currentTrackNumber + 1);
+                play();
+            }
         }
     }
 }

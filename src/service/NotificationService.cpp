@@ -3,6 +3,7 @@
 #include <player_protocol/MessageSerializer.hpp>
 
 #include <player_protocol/changed/MediumChangedMessage.hpp>
+#include <player_protocol/changed/PlayerStateChangedMessage.hpp>
 #include <player_protocol/changed/TimeChangedMessage.hpp>
 #include <player_protocol/changed/VolumeChangedMessage.hpp>
 
@@ -13,9 +14,16 @@ namespace service {
         , buffer{} {}
 
     void NotificationService::initializeCallbacks(audio::PlaylistPlayer &player) {
+        player.setOnStateChanged([&](auto state) { handleStateChanged(state); });
         player.setOnProgressChanged([&](auto currentTime, auto totalTime) { handleTimeChanged(currentTime, totalTime); });
         player.setOnMediumChanged([&](auto& medium) { handleMediumChanged(medium); });
         player.setOnVolumeChanged([&](auto volume) { handleVolumeChanged(volume); });
+    }
+
+    void NotificationService::handleStateChanged(audio::AudioPlayer::State state) {
+        player_protocol::changed::PlayerStateChangedMessage message(static_cast<player_protocol::PlayerState>(state));
+        std::uint32_t size = player_protocol::MessageSerializer::serialize(message, buffer.data());
+        communicationProvider.transmitSizedMessage(buffer.data(), size);
     }
 
     void NotificationService::handleTimeChanged(float currentTime, float totalTime) {

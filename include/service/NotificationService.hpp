@@ -8,6 +8,7 @@ namespace service {
         explicit NotificationService(sys::BluetoothCommunicationProvider& communicationProvider);
         void initializeCallbacks(audio::PlaylistPlayer& player);
     private:
+        void handleStateChanged(audio::AudioPlayer::State state);
         void handleTimeChanged(float currentTime, float totalTime);
         void handleMediumChanged(const std::string& medium);
         void handleVolumeChanged(std::uint32_t volume);

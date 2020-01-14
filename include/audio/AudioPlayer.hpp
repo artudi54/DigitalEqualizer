@@ -12,15 +12,16 @@ namespace audio {
     public:
         enum class State {
             //TODO: move state to new file
-            NoSource,
-            Stopped,
-            Playing,
-            Paused
+            NO_SOURCE,
+            STOPPED,
+            PLAYING,
+            PAUSED
         };
 
         AudioPlayer();
         ~AudioPlayer() override;
         void setSource(const std::string& sourcePath);
+        void unloadSource();
         void play();
         void pause();
         void stop();
@@ -40,6 +41,7 @@ namespace audio {
         [[nodiscard]] float getCurrentTime() const;
         [[nodiscard]] float getEndTime() const;
 
+        void setOnStateChanged(const std::function<void(State)>& onStateChanged);
         void setOnProgressChanged(const std::function<void(float,float)>& onProgressChanged);
         void setOnMediumChanged(const std::function<void(const std::string&)>& onMediumChanged);
         void setOnVolumeChanged(const std::function<void(unsigned)>& onVolumeChanged);
@@ -53,6 +55,7 @@ namespace audio {
         };
 
         void progress() override;
+        void updateState(State state);
 
         void playerInitialize();
         void playerDeinitialize();
@@ -75,6 +78,7 @@ namespace audio {
         std::vector<std::uint16_t> cachedBuffer;
         filter::AudioFilter* filter;
 
+        std::function<void(State)> onStateChanged;
         std::function<void(float,float)> onProgressChanged;
         std::function<void(const std::string&)> onMediumChanged;
         std::function<void(unsigned)> onVolumeChanged;

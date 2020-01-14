@@ -1,7 +1,7 @@
 #include "DigitalEqualizerFilter.hpp"
 #include <cmath>
 #include <algorithm>
-
+volatile float sum = 15;
 namespace audio::filter {
     static float dbToGain(float db) {
         return std::pow(10.0F, db / 20.0F);
@@ -121,6 +121,10 @@ namespace audio::filter {
             float frequency = getFrequency(i, fft.size(), samplingRate);
             fft[i] = std::polar(std::abs(fft[i]) * parameters.getGain() * parameters.getGainAtFrequency(frequency), std::arg(fft[i]));
         }
+        sum = 0.0F;
+        for (std::size_t i = 0; i <= fft.size() / 2; ++i)
+            sum += std::abs(fft[i]);
+        sum /= fft.size();
     }
 
     float DigitalEqualizerFilter::getFrequency(std::size_t i, std::size_t size, std::size_t samplingRate) const {

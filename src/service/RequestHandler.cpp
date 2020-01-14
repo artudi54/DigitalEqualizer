@@ -30,10 +30,12 @@ namespace service {
     }
 
     void RequestHandler::handleMessage(const request::ChangeMediumRequest &message) {
-        auto& files = player.getPlaylist().getFileNames();
+        auto& files = player.getPlaylist().getFilePaths();
         auto it = std::find(files.begin(), files.end(), message.getNewMedium());
-        if (it != files.end())
+        if (it != files.end()) {
+            player.setCurrentTrackNumber(it - files.begin());
             sendMessage(response::OkResponse());
+        }
         else
             sendMessage(response::ErrorResponse("Cannot find file to play in playlist"));
     }

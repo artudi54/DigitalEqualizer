@@ -100,4 +100,12 @@ namespace audio {
             throw std::runtime_error("Failed to read data chunk from '" + getFilePath() + "'");
         remainingDataSize = totalDataSize = dataSubChunk.size;
     }
+
+    void WavAudioReader::seek(std::size_t pos) {
+        if (pos > getTotalDataSize())
+            throw std::invalid_argument("Invalid position: " + std::to_string(pos));
+        std::size_t dataStartPos = readStream.pos() - getReadDataSize();
+        readStream.seek(dataStartPos + pos);
+        remainingDataSize = totalDataSize - pos;
+    }
 }
