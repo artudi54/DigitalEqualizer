@@ -24,6 +24,11 @@ namespace audio {
         player.stop();
     }
 
+    void PlaylistPlayer::reset() {
+        setCurrentTrackNumber(static_cast<std::uint32_t>(-1));
+        player.setVolume(100);
+    }
+
     void PlaylistPlayer::seek(float time) {
         player.seek(time);
     }

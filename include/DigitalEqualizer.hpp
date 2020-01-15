@@ -9,8 +9,6 @@ public:
     DigitalEqualizer();
 
 private:
-    void setupFilter();
-
     audio::PlaylistPlayer playlistPlayer;
     audio::filter::DigitalEqualizerFilter filter;
 

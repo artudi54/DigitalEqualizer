@@ -5,14 +5,9 @@ DigitalEqualizer::DigitalEqualizer()
     , filter()
     , communicationProvider()
     , notificationService(communicationProvider)
-    , requestHandler(communicationProvider, playlistPlayer) {
-    setupFilter();
+    , requestHandler(communicationProvider, playlistPlayer, filter) {
     notificationService.initializeCallbacks(playlistPlayer);
-}
-
-void DigitalEqualizer::setupFilter() {
-    audio::filter::DigitalEqualizerParameters parameters;
-    parameters.setFrequenciesType(audio::filter::DigitalEqualizerParameters::FrequenciesType::ISOOctave);
-    filter.setParameters(parameters);
+    notificationService.initializeCallbacks(filter);
     playlistPlayer.setAudioFilter(filter);
+
 }

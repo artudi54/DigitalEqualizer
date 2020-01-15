@@ -42,6 +42,10 @@ extern "C" {
 namespace audio {
     const std::size_t BUFFER_SIZE = 16384;
 
+    std::uint32_t normalizedVolume(std::uint32_t volume) {
+        return static_cast<std::uint32_t>(std::round(0.8F * static_cast<float>(volume))) + 10;
+    }
+
     AudioPlayer::AudioPlayer()
         : state(State::NO_SOURCE)
         , bufferState(BufferState::Done)
@@ -79,6 +83,8 @@ namespace audio {
     }
 
     void AudioPlayer::unloadSource() {
+        if (isEmpty())
+            return;
         stop();
         updateState(State::NO_SOURCE);
         if (onMediumChanged != nullptr)
@@ -119,7 +125,6 @@ namespace audio {
             return;
         playerDeinitialize();
         updateState(State::STOPPED);
-        bufferState = BufferState::Done;
         seek(0.0F);
     }
 
@@ -233,7 +238,7 @@ namespace audio {
     }
 
     void AudioPlayer::playerInitialize() {
-        if (BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_AUTO, static_cast<std::uint8_t>(volume),
+        if (BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_AUTO, static_cast<std::uint8_t>(normalizedVolume(volume)),
                                reader->getMetadata().getSamplingRate()) != AUDIO_OK)
             throw std::runtime_error("Failed to playerInitialize audio player for '" + reader->getFilePath() + "'");
     }
@@ -241,6 +246,7 @@ namespace audio {
     void AudioPlayer::playerDeinitialize() {
         if (BSP_AUDIO_OUT_Stop(CODEC_PDWN_HW) != AUDIO_OK)
             throw std::runtime_error("Failed to stop audio player for '" + reader->getFilePath() + "'");
+        bufferState = BufferState::Done;
     }
 
     void AudioPlayer::playerPlayBuffer() {
@@ -249,7 +255,7 @@ namespace audio {
     }
 
     void AudioPlayer::playerSetVolume() {
-        if (BSP_AUDIO_OUT_SetVolume(static_cast<std::uint8_t>(volume)) != AUDIO_OK)
+        if (BSP_AUDIO_OUT_SetVolume(static_cast<std::uint8_t>(normalizedVolume(volume))) != AUDIO_OK)
             throw std::runtime_error("Failed to play volume from '" + reader->getFilePath() + "'");
     }
 

@@ -2,6 +2,7 @@
 
 #include <player_protocol/MessageSerializer.hpp>
 
+#include <player_protocol/changed/EqualizerParametersChanged.hpp>
 #include <player_protocol/changed/MediumChangedMessage.hpp>
 #include <player_protocol/changed/PlayerStateChangedMessage.hpp>
 #include <player_protocol/changed/TimeChangedMessage.hpp>
@@ -18,6 +19,10 @@ namespace service {
         player.setOnProgressChanged([&](auto currentTime, auto totalTime) { handleTimeChanged(currentTime, totalTime); });
         player.setOnMediumChanged([&](auto& medium) { handleMediumChanged(medium); });
         player.setOnVolumeChanged([&](auto volume) { handleVolumeChanged(volume); });
+    }
+
+    void NotificationService::initializeCallbacks(audio::filter::DigitalEqualizerFilter &filter) {
+        filter.setOnParametersChanged([&](auto& parameters) { handleEqualizerParametersChanged(parameters); });
     }
 
     void NotificationService::handleStateChanged(audio::AudioPlayer::State state) {
@@ -40,6 +45,16 @@ namespace service {
 
     void NotificationService::handleVolumeChanged(std::uint32_t volume) {
         player_protocol::changed::VolumeChangedMessage message(volume);
+        std::uint32_t size = player_protocol::MessageSerializer::serialize(message, buffer.data());
+        communicationProvider.transmitSizedMessage(buffer.data(), size);
+    }
+
+    void NotificationService::handleEqualizerParametersChanged(const audio::filter::DigitalEqualizerParameters &parameters) {
+        player_protocol::EqualizerParameters messageParameters;
+        messageParameters.setGainDb(parameters.getGainDb());
+        for (std::size_t i = 0; i < 10; ++i)
+            messageParameters.setGainDbAt(i, parameters.getDbGain(i));
+        player_protocol::changed::EqualizerParametersChanged message(messageParameters);
         std::uint32_t size = player_protocol::MessageSerializer::serialize(message, buffer.data());
         communicationProvider.transmitSizedMessage(buffer.data(), size);
     }

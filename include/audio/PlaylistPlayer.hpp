@@ -10,6 +10,7 @@ namespace  audio {
         void play();
         void pause();
         void stop();
+        void reset();
         void seek(float time);
 
         [[nodiscard]] std::int32_t getCurrentTrackNumber() const;

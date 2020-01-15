@@ -1,15 +1,11 @@
 #pragma once
+#include <functional>
 #include <audio/filter/FFTAudioFilter.hpp>
 
 namespace audio::filter {
     class DigitalEqualizerParameters {
     public:
-        enum class FrequenciesType {
-            ISOOctave
-        };
         DigitalEqualizerParameters() noexcept;
-
-        void setFrequenciesType(FrequenciesType frequenciesType);
 
         [[nodiscard]] float getGainDb() const noexcept;
         void setGainDb(float gainDb) noexcept;
@@ -24,6 +20,8 @@ namespace audio::filter {
         [[nodiscard]] float getGainAt(std::size_t idx) const;
         [[nodiscard]] float getGainAtFrequency(float frequency) const;
 
+        bool operator==(const DigitalEqualizerParameters& other) const;
+
     private:
         class FilterNode {
         public:
@@ -34,6 +32,8 @@ namespace audio::filter {
             [[nodiscard]] float getGainDb() const;
             void setGainDb(float dbGain);
             [[nodiscard]] float getGain() const;
+
+            bool operator==(const FilterNode& other) const;
 
         private:
             float frequency;
@@ -53,6 +53,8 @@ namespace audio::filter {
 
         [[nodiscard]] const DigitalEqualizerParameters &getParameters() const;
         void setParameters(const DigitalEqualizerParameters &parameters);
+        void resetParameters();
+        void setOnParametersChanged(const std::function<void(const DigitalEqualizerParameters&)>& onParametersChanged);
 
     protected:
         void processFFT(std::vector<std::complex<float>>& fft, std::size_t samplingRate) override;
@@ -60,5 +62,7 @@ namespace audio::filter {
         [[nodiscard]] float getFrequency(std::size_t i, std::size_t size, std::size_t samplingRate) const;
 
         DigitalEqualizerParameters parameters;
+        std::array<float, 10> averages;
+        std::function<void(const DigitalEqualizerParameters&)> onParametersChanged;
     };
 }

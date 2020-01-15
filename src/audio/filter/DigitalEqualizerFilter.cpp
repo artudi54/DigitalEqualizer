@@ -8,7 +8,6 @@ namespace audio::filter {
     }
 
 
-
     DigitalEqualizerParameters::FilterNode::FilterNode(float frequency, float dbGain)
         : frequency(frequency)
         , gainDb(dbGain)
@@ -31,27 +30,25 @@ namespace audio::filter {
         return gain;
     }
 
+    bool DigitalEqualizerParameters::FilterNode::operator==(const DigitalEqualizerParameters::FilterNode &other) const {
+        return frequency == other.frequency && gainDb == other.gainDb && gain == other.gain;
+    }
 
 
     DigitalEqualizerParameters::DigitalEqualizerParameters() noexcept
         : gainDb(0.0F)
         , gain(dbToGain(gainDb))
-        , nodes() {}
-
-    void DigitalEqualizerParameters::setFrequenciesType(FrequenciesType frequenciesType) {
-        nodes.clear();
-        if (frequenciesType == FrequenciesType::ISOOctave) {
-            nodes.emplace_back(31.5);
-            nodes.emplace_back(63);
-            nodes.emplace_back(125);
-            nodes.emplace_back(250);
-            nodes.emplace_back(500);
-            nodes.emplace_back(1000);
-            nodes.emplace_back(2000);
-            nodes.emplace_back(4000);
-            nodes.emplace_back(8000);
-            nodes.emplace_back(16000);
-        }
+        , nodes() {
+        nodes.emplace_back(31.5);
+        nodes.emplace_back(63);
+        nodes.emplace_back(125);
+        nodes.emplace_back(250);
+        nodes.emplace_back(500);
+        nodes.emplace_back(1000);
+        nodes.emplace_back(2000);
+        nodes.emplace_back(4000);
+        nodes.emplace_back(8000);
+        nodes.emplace_back(16000);
     }
 
     void DigitalEqualizerParameters::setGainDb(float gainDb) noexcept {
@@ -104,16 +101,34 @@ namespace audio::filter {
         return m * frequency + b;
     }
 
+    bool DigitalEqualizerParameters::operator==(const DigitalEqualizerParameters &other) const {
+        return gainDb == other.gainDb && gain == other.gain && nodes == other.nodes;
+    }
+
 
     DigitalEqualizerFilter::DigitalEqualizerFilter()
-        : parameters() {}
+        : parameters()
+        , averages()
+        , onParametersChanged() {}
 
     const DigitalEqualizerParameters &DigitalEqualizerFilter::getParameters() const {
         return parameters;
     }
 
     void DigitalEqualizerFilter::setParameters(const DigitalEqualizerParameters &parameters) {
+        if (parameters == this->parameters)
+            return;
         this->parameters = parameters;
+        if (onParametersChanged != nullptr)
+            onParametersChanged(this->parameters);
+    }
+
+    void DigitalEqualizerFilter::resetParameters() {
+        setParameters(DigitalEqualizerParameters());
+    }
+
+    void DigitalEqualizerFilter::setOnParametersChanged(const std::function<void(const DigitalEqualizerParameters &)> &onParametersChanged) {
+        this->onParametersChanged = onParametersChanged;
     }
 
     void DigitalEqualizerFilter::processFFT(std::vector<std::complex<float>> &fft, std::size_t samplingRate) {

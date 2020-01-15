@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <player_protocol/MessageSerializer.hpp>
 
+#include <player_protocol/request/ChangeEqualizerParametersRequest.hpp>
 #include <player_protocol/request/ChangeMediumRequest.hpp>
 #include <player_protocol/request/ChangeVolumeRequest.hpp>
 #include <player_protocol/request/PauseRequest.hpp>
@@ -16,9 +17,10 @@
 using namespace player_protocol;
 
 namespace service {
-    RequestHandler::RequestHandler(sys::BluetoothCommunicationProvider &communicationProvider, audio::PlaylistPlayer &player)
+    RequestHandler::RequestHandler(sys::BluetoothCommunicationProvider &communicationProvider, audio::PlaylistPlayer &player, audio::filter::DigitalEqualizerFilter& filter)
         : communicationProvider(communicationProvider)
         , player(player)
+        , filter(filter)
         , buffer{} {}
 
     void RequestHandler::progress() {
@@ -27,6 +29,15 @@ namespace service {
             auto message = MessageSerializer::deserialize(buffer.data());
             message->visit(*this);
         }
+    }
+
+    void RequestHandler::handleMessage(const request::ChangeEqualizerParametersRequest &message) {
+        const player_protocol::EqualizerParameters& messageParameters = message.getParameters();
+        audio::filter::DigitalEqualizerParameters parameters;
+        parameters.setGainDb(messageParameters.getGainDb());
+        for (std::size_t i = 0; i < 10; ++i)
+            parameters.setDbGainAt(i, messageParameters.getGainDbAt(i));
+        filter.setParameters(parameters);
     }
 
     void RequestHandler::handleMessage(const request::ChangeMediumRequest &message) {
@@ -75,6 +86,20 @@ namespace service {
 
         try {
             player.play();
+        }
+        catch (std::exception& exc) {
+            sendMessage(response::ErrorResponse(exc.what()));
+            return;
+        }
+        sendMessage(response::OkResponse());
+    }
+
+    void RequestHandler::handleMessage(const request::ResetRequest &message) {
+        (void)message;
+
+        try {
+            player.reset();
+            filter.resetParameters();
         }
         catch (std::exception& exc) {
             sendMessage(response::ErrorResponse(exc.what()));
